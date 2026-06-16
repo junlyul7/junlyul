@@ -31,7 +31,7 @@ Use `stage4-execution-examples.md` as the expected-output reference for the 10 s
 For a quick batch check, run:
 
 ```powershell
-.\run-manual-voc-scenarios.ps1 -Limit 3
+.\run-manual-voc-scenarios.ps1 -Limit 1
 ```
 
 The full 10-scenario batch may take a while because each request generates an embedding and queries Supabase.

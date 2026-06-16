@@ -5,7 +5,7 @@
 - Input: `안녕하세요`
 - Router: `casual_chat`
 - Search: not run
-- Draft: not run
+- Draft: `안녕하세요. 상품 관련 문의를 알려주시면 확인해드릴게요.`
 
 ## Example 2
 
@@ -69,4 +69,3 @@
 - Router: `customer_inquiry`
 - Search: `DOC-025` / `exact`
 - Draft: `유병자보험의 가입가능 여부는 상품별 가입조건에 따라 달라집니다.`
-

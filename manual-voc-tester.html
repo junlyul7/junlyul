@@ -3,197 +3,732 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Manual VOC Tester</title>
+  <title>상품 VOC 응대지원 시뮬레이터</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --text: #e5eefb;
-      --muted: #9ca3af;
-      --accent: #38bdf8;
-      --accent-2: #22c55e;
-      --danger: #fb7185;
-      --border: #334155;
+      --bg: #f8f3e7;
+      --bg-2: #fff6dd;
+      --ink: #141414;
+      --muted: #5f5a53;
+      --line: #151515;
+      --teal: #a9e6ea;
+      --pink: #ff64bb;
+      --lavender: #c7b0ff;
+      --butter: #ffe45e;
+      --mint: #9ef0b8;
+      --salmon: #ff8b6b;
+      --panel: #fffdf7;
+      --shadow: 0 10px 0 rgba(21, 21, 21, 1);
+      --radius: 32px;
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1e293b, var(--bg) 55%);
-      color: var(--text);
       min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 238, 153, 0.85), transparent 26%),
+        radial-gradient(circle at 85% 12%, rgba(255, 210, 224, 0.82), transparent 28%),
+        linear-gradient(180deg, #fff7d8 0%, #fbf0e2 56%, #f6efe6 100%);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
     }
     .wrap {
-      max-width: 1100px;
+      max-width: 1320px;
       margin: 0 auto;
-      padding: 32px 20px 48px;
+      padding: 26px 18px 44px;
     }
-    .hero {
+    .topbar {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
-    .hero h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 44px);
-      letter-spacing: -0.03em;
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 18px;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      background: #ffe56a;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      box-shadow: var(--shadow);
     }
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    .grid {
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 16px;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      background: #f9f6ef;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: var(--shadow);
+    }
+    .badge.green { background: #99f0c0; }
+    .badge.blue { background: #b7edf6; }
+    .badge.orange { background: #ffb07b; }
+    .hero {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.18fr 0.82fr;
       gap: 16px;
+      margin-bottom: 18px;
     }
     .card {
-      background: color-mix(in srgb, var(--panel) 90%, black 10%);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.25);
+      border: 4px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: var(--panel);
+      overflow: hidden;
     }
-    .card h2 {
-      margin: 0 0 14px;
+    .hero-main {
+      position: relative;
+      padding: 26px 26px 22px;
+      background: linear-gradient(135deg, #a6e4eb 0%, #9be8ef 58%, #b7f1f3 100%);
+      min-height: 520px;
+    }
+    .hero-main::before,
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      opacity: 0.95;
+      pointer-events: none;
+    }
+    .hero-main::before {
+      right: 0;
+      top: 0;
+      border-width: 0 84px 84px 0;
+      border-color: transparent var(--pink) transparent transparent;
+    }
+    .hero-main::after {
+      left: 0;
+      top: 96px;
+      border-width: 0 0 74px 74px;
+      border-color: transparent transparent transparent var(--pink);
+      transform: skewY(-2deg);
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: #fff9f1;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+    }
+    .chip.warn { background: #ff7f6d; }
+    .chip.soft { background: #b7f1ff; }
+    .chip.green { background: #9ff0be; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: end;
+    }
+    .hero-copy h1 {
+      margin: 0 0 12px;
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+      font-size: clamp(58px, 7vw, 105px);
+      font-weight: 900;
+    }
+    .hero-copy p {
+      margin: 0 0 18px;
+      max-width: 640px;
       font-size: 18px;
+      line-height: 1.65;
+      font-weight: 700;
+      color: #171717;
     }
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
     }
-    input, textarea, select {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      outline: none;
+    .btn {
+      appearance: none;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      padding: 14px 18px;
+      background: #fff7ea;
+      color: var(--ink);
       font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
     }
-    textarea { min-height: 120px; resize: vertical; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stack { display: grid; gap: 12px; }
-    .buttons {
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--butter); }
+    .btn.secondary { background: #fffdf7; }
+    .btn.success { background: #9ef0b8; }
+    .btn.ghost { background: #f5f1ea; }
+    .mini-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .mini-tags .pill {
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: #fffdf7;
+      padding: 8px 14px;
+      font-weight: 800;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+    }
+    .hero-art {
+      position: relative;
+      min-height: 340px;
+      padding: 16px;
+      border: 4px solid var(--line);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.7), transparent 24%),
+        linear-gradient(180deg, #fff5db, #f7e9c1);
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+      overflow: hidden;
+    }
+    .hero-art .bubble {
+      position: absolute;
+      padding: 16px 18px;
+      border: 4px solid var(--line);
+      border-radius: 24px;
+      background: #ffe25b;
+      font-weight: 900;
+      max-width: 210px;
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+    }
+    .hero-art .bubble.one { top: 16px; right: 16px; }
+    .hero-art .bubble.two { left: 18px; bottom: 16px; background: #a9eff4; max-width: 180px; }
+    .hero-art .desk {
+      position: absolute;
+      left: 26px;
+      bottom: 18px;
+      width: 170px;
+      height: 120px;
+      border: 4px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffd97f, #ffbf4a);
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+    }
+    .hero-art .monitor {
+      position: absolute;
+      left: 54px;
+      bottom: 40px;
+      width: 108px;
+      height: 76px;
+      border: 4px solid var(--line);
+      border-radius: 14px;
+      background: #1c2a47;
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+    }
+    .hero-art .monitor::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 30% 35%, #fff 0 8px, transparent 9px),
+        radial-gradient(circle at 70% 35%, #fff 0 8px, transparent 9px),
+        linear-gradient(180deg, #72d3ff 0%, #5bc1a8 100%);
+    }
+    .hero-art .papers {
+      position: absolute;
+      right: 38px;
+      bottom: 34px;
+      width: 120px;
+      height: 150px;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      background: #9df0bf;
+      transform: rotate(-7deg);
+      box-shadow: 0 8px 0 rgba(21, 21, 21, 1);
+    }
+    .hero-art .papers::before,
+    .hero-art .papers::after {
+      content: "";
+      position: absolute;
+      border: 3px solid var(--line);
+      border-radius: 14px;
+      background: #ffd766;
+    }
+    .hero-art .papers::before {
+      inset: 18px 16px 74px 16px;
+    }
+    .hero-art .papers::after {
+      inset: 84px 16px 16px 16px;
+      background: #fff2b5;
+    }
+    .support-grid {
+      display: grid;
+      grid-template-columns: 0.94fr 1.06fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .panel {
+      padding: 20px;
+      background: var(--panel);
+    }
+    .panel.lavender { background: #d1beff; }
+    .panel.yellow { background: #ffe166; }
+    .panel.blue { background: #cbf0f6; }
+    .panel h2, .panel h3 {
+      margin: 0 0 10px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      font-size: 28px;
+      font-weight: 900;
+    }
+    .panel .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      background: #9df0bf;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+      margin-bottom: 14px;
+    }
+    .panel p {
+      margin: 0;
+      line-height: 1.65;
+      font-weight: 700;
+      color: #1f1f1f;
+    }
+    .panel .detail-toggle {
+      display: inline-flex;
+      margin-top: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      color: var(--ink);
+      border-bottom: 3px solid var(--ink);
+    }
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .review-item {
+      padding: 14px 16px;
+      background: #fffdf6;
+      border: 3px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+    }
+    .review-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .form-card {
+      padding: 20px;
+      background: #fffdf7;
+    }
+    .form-card h2 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .form-card .desc {
+      margin: 0 0 16px;
+      font-weight: 700;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 4px solid var(--line);
+      border-radius: 20px;
+      padding: 14px 16px;
+      background: #fffef8;
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+    }
+    .field textarea {
+      min-height: 128px;
+      resize: vertical;
+    }
+    .field textarea::placeholder,
+    .field input::placeholder { color: #878175; }
+    .button-row {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 12px;
     }
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 11px 16px;
-      font: inherit;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-    button:hover { transform: translateY(-1px); }
-    .primary { background: var(--accent); color: #00111f; font-weight: 700; }
-    .ghost { background: var(--panel-2); color: var(--text); }
-    .success { background: var(--accent-2); color: #052e12; font-weight: 700; }
-    .danger { background: var(--danger); color: #3f0d18; font-weight: 700; }
-    .result {
-      background: #07101d;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      min-height: 360px;
-      overflow: auto;
-      padding: 14px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.5;
-    }
     .hint {
+      margin-top: 12px;
       color: var(--muted);
       font-size: 13px;
-      margin-top: 8px;
+      line-height: 1.6;
+      font-weight: 700;
     }
-    .pill {
-      display: inline-flex;
+    .result-card {
+      padding: 18px;
+      background: #fcf7eb;
+    }
+    .result-top {
+      display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.14);
-      color: #7dd3fc;
-      font-size: 12px;
-      margin-right: 8px;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
     }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
-      .row { grid-template-columns: 1fr; }
+    .result-top h2 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .status-box {
+      border: 4px solid var(--line);
+      border-radius: 22px;
+      background: #fffdf7;
+      padding: 14px 16px;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+    }
+    .status-box .label {
+      display: block;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .status-box .value {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .cards-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .result-block {
+      border: 4px solid var(--line);
+      border-radius: 22px;
+      background: #fffdf7;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+      padding: 14px 16px;
+    }
+    .result-block h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .result-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+      color: #242424;
+    }
+    .result-empty {
+      color: #756f66;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+    details {
+      margin-top: 12px;
+      border: 4px solid var(--line);
+      border-radius: 22px;
+      background: #fffdf7;
+      box-shadow: 0 6px 0 rgba(21, 21, 21, 1);
+      overflow: hidden;
+    }
+    details summary {
+      cursor: pointer;
+      padding: 14px 16px;
+      font-weight: 900;
+      list-style: none;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details pre {
+      margin: 0;
+      border-top: 3px solid var(--line);
+      padding: 14px 16px;
+      max-height: 320px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+      background: #fffef9;
+    }
+    .scenario-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .scenario-row .scenario-select {
+      min-width: 0;
+    }
+    @media (max-width: 1100px) {
+      .hero,
+      .support-grid,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 720px) {
+      .status-row,
+      .field-grid,
+      .scenario-row {
+        grid-template-columns: 1fr;
+      }
+      .hero-main {
+        padding: 20px;
+        min-height: auto;
+      }
+      .hero-copy h1 {
+        font-size: clamp(44px, 16vw, 72px);
+      }
+      .hero-art {
+        min-height: 280px;
+      }
+      .result-top {
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div>
-        <span class="pill">Stage 4 tester</span>
-        <span class="pill">router + search + draft</span>
+    <div class="topbar">
+      <div class="brand">상품 VOC 응대지원 시뮬레이터</div>
+      <div class="badge-row">
+        <div class="badge blue">FAQ 기반 초안</div>
+        <div class="badge orange">담당자 확인 우선</div>
+        <div class="badge green">베타</div>
       </div>
-      <h1>Manual VOC Tester</h1>
-      <p>질문을 넣으면 라우터 분기, 유사문 검색, 답변 초안을 한 번에 확인할 수 있는 브라우저 테스트 페이지입니다.</p>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <h2>질문 입력</h2>
-        <div class="stack">
-          <div class="row">
-            <div>
-              <label for="endpoint">Endpoint URL</label>
-              <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
+    <section class="hero card">
+      <div class="hero-main">
+        <div class="hero-tags">
+          <span class="chip">현장 확인용</span>
+          <span class="chip warn">답변보다 근거 먼저</span>
+          <span class="chip soft">Vercel 배포 전 검토</span>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>상품 VOC<br>응대 에이전트</h1>
+            <p>
+              반복 문의를 라우터로 분기하고, Supabase의 유사문서를 검색한 뒤,
+              답변 초안을 현장형 화면에서 바로 확인하는 시연용 페이지입니다.
+            </p>
+            <div class="hero-actions">
+              <button class="btn primary" id="jumpInput">질문 바로 입력</button>
+              <button class="btn secondary" id="jumpResult">결과 구조 보기</button>
             </div>
-            <div>
-              <label for="apikey">Supabase Key</label>
-              <input id="apikey" placeholder="anon or publishable key">
+            <div class="mini-tags">
+              <span class="pill">모바일 우선</span>
+              <span class="pill">부분일치 FAQ 검색</span>
+              <span class="pill">상품명 정규화</span>
             </div>
           </div>
-          <div>
-            <label for="question">질문</label>
-            <textarea id="question" placeholder="예: 실손보험료가 왜 올라요?"></textarea>
+
+          <div class="hero-art" aria-hidden="true">
+            <div class="bubble one">답변보다 근거를 먼저 검수하는 상담형 UI 흐름</div>
+            <div class="bubble two">질문을 넣으면 라우터, 검색, 초안을 한 번에 확인</div>
+            <div class="monitor"></div>
+            <div class="desk"></div>
+            <div class="papers"></div>
           </div>
-          <div>
-            <label for="scenario">시나리오 선택</label>
-            <select id="scenario">
-              <option value="">직접 입력</option>
-              <option>안녕하세요</option>
-              <option>실손보험료가 왜 올라요?</option>
-              <option>변액연금 연금개시연령 변경 가능한가요?</option>
-              <option>종신보험 납입기간 변경하고 싶어요</option>
-              <option>간병보험 보험금 청구방법 알려주세요</option>
-              <option>변액유니버설 펀드변경 가능해요?</option>
-              <option>보험료를 알려줘</option>
-              <option>이 문의는 어느 부서가 봐야 하나요?</option>
-              <option>종합보험 종합보장 확인</option>
-              <option>유병자보험 가입가능 여부 알려줘</option>
-            </select>
-          </div>
-          <div class="buttons">
-            <button class="primary" id="run">Run Test</button>
-            <button class="ghost" id="fillScenario">Fill Selected</button>
-            <button class="success" id="example1">Example 1</button>
-            <button class="success" id="example2">Example 2</button>
-            <button class="ghost" id="clear">Clear</button>
-          </div>
-          <div class="hint">CORS는 `manual-voc-flow` 함수에 이미 설정되어 있어서 브라우저에서 바로 호출 가능합니다.</div>
-          <div class="hint">Endpoint와 Key는 브라우저에 저장되어 다음 실행 때 자동으로 불러옵니다.</div>
         </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h2>결과</h2>
-        <div id="result" class="result">아직 실행 전입니다.</div>
-      </div>
-    </div>
+    <section class="support-grid">
+      <article class="card panel lavender">
+        <div class="eyebrow">내부 검수용</div>
+        <h2>먼저 확인할 것</h2>
+        <p>
+          이 화면은 상담사가 답변을 바로 쓰기 전에, 먼저 <strong>상품명 + 이슈유형</strong>이 맞는지
+          보고, 그 다음에 유사 FAQ와 매뉴얼 근거를 확인하는 흐름을 보여줍니다.
+        </p>
+        <a class="detail-toggle" href="#inputCard">▶ 질문 넣기 바로 가기</a>
+      </article>
+
+      <article class="card panel yellow">
+        <h2>REVIEW POINTS</h2>
+        <p>상담사는 답변 자체보다 근거와 위험 신호를 먼저 확인합니다.</p>
+        <div class="review-list">
+          <div class="review-item">
+            <strong>1. 라우터 판단</strong>
+            입력 문장을 잡담, 보강 필요, 고객문의, 담당자 문의로 먼저 나눕니다.
+          </div>
+          <div class="review-item">
+            <strong>2. 유사문 검색</strong>
+            `manual_docs.csv`의 embedding을 활용해 가까운 사례를 찾습니다.
+          </div>
+          <div class="review-item">
+            <strong>3. 초안 제시</strong>
+            `standard_answer`를 기반으로 검수 가능한 초안을 보여줍니다.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <article class="card form-card" id="inputCard">
+        <h2>ASK THE BOT</h2>
+        <p class="desc">
+          현장 테스트용으로 질문을 넣고, 라우터 분기 / 검색 / 초안을 바로 확인하세요.
+          배포 전 구성을 검토하는 목적이라 로컬 페이지에서 바로 실행됩니다.
+        </p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="endpoint">Endpoint URL</label>
+            <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow" placeholder="Supabase Edge Function URL">
+          </div>
+          <div class="field">
+            <label for="apikey">Supabase Key</label>
+            <input id="apikey" placeholder="anon or publishable key">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="scenario">시나리오 선택</label>
+          <div class="scenario-row">
+            <select id="scenario" class="scenario-select">
+              <option value="">직접 입력</option>
+              <option>실손보험료가 왜 올라요?</option>
+              <option>변액저축의 적립금 조회 방법을 알려줘</option>
+              <option>간편보험 간편심사 조건을 알려줘</option>
+              <option>암보험 보장내용 확인</option>
+              <option>정기보험 가입금액 변경</option>
+              <option>유병자상품 가입가능한가요?</option>
+              <option>종신보험 납입기간 변경하고 싶어요</option>
+              <option>보험료를 알려줘</option>
+            </select>
+            <button class="btn ghost" id="fillScenario">Fill Selected</button>
+            <button class="btn success" id="example1">Example 1</button>
+            <button class="btn success" id="example2">Example 2</button>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top: 12px;">
+          <label for="question">질문 입력</label>
+          <textarea id="question" placeholder="예: 실손보험료가 왜 올라요?"></textarea>
+        </div>
+
+        <div class="button-row">
+          <button class="btn primary" id="run">Run Test</button>
+          <button class="btn secondary" id="clear">Clear</button>
+          <button class="btn ghost" id="copyJson">Copy JSON</button>
+        </div>
+
+        <div class="hint">
+          브라우저에서 바로 호출하는 테스트 화면입니다. CORS는 `manual-voc-flow` 함수에 이미 설정되어 있습니다.
+          Endpoint와 Key는 자동 저장됩니다.
+        </div>
+      </article>
+
+      <article class="card result-card" id="resultCard">
+        <div class="result-top">
+          <h2>결과</h2>
+          <span class="badge green" id="runState">대기 중</span>
+        </div>
+
+        <div class="status-row">
+          <div class="status-box">
+            <span class="label">Router</span>
+            <div class="value" id="routerValue">-</div>
+          </div>
+          <div class="status-box">
+            <span class="label">Search</span>
+            <div class="value" id="searchValue">-</div>
+          </div>
+          <div class="status-box">
+            <span class="label">Draft</span>
+            <div class="value" id="draftValue">-</div>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <div class="result-block">
+            <h3>판단 요약</h3>
+            <div id="summary" class="result-empty">아직 실행 전입니다. 질문을 넣고 Run Test를 눌러보세요.</div>
+          </div>
+
+          <div class="result-block">
+            <h3>상세 초안</h3>
+            <div id="draftText" class="result-empty">초안 결과가 여기에 표시됩니다.</div>
+          </div>
+        </div>
+
+        <details>
+          <summary>Raw JSON 보기</summary>
+          <pre id="rawJson">아직 실행 전입니다.</pre>
+        </details>
+      </article>
+    </section>
   </div>
 
   <script>
@@ -201,15 +736,21 @@
     const apikeyEl = document.getElementById('apikey');
     const questionEl = document.getElementById('question');
     const scenarioEl = document.getElementById('scenario');
-    const resultEl = document.getElementById('result');
+    const runStateEl = document.getElementById('runState');
+    const routerValueEl = document.getElementById('routerValue');
+    const searchValueEl = document.getElementById('searchValue');
+    const draftValueEl = document.getElementById('draftValue');
+    const summaryEl = document.getElementById('summary');
+    const draftTextEl = document.getElementById('draftText');
+    const rawJsonEl = document.getElementById('rawJson');
     const storageKeys = {
       endpoint: 'manual-voc-endpoint',
       apikey: 'manual-voc-apikey',
     };
 
     const examples = {
-      'Example 1': '안녕하세요',
-      'Example 2': '종신보험료 알려줘',
+      example1: '실손보험료가 왜 올라요?',
+      example2: '변액저축의 적립금 조회 방법을 알려줘',
     };
 
     endpointEl.value = localStorage.getItem(storageKeys.endpoint) || endpointEl.value;
@@ -217,26 +758,82 @@
     endpointEl.addEventListener('input', () => localStorage.setItem(storageKeys.endpoint, endpointEl.value));
     apikeyEl.addEventListener('input', () => localStorage.setItem(storageKeys.apikey, apikeyEl.value));
 
+    function setScenarioText(text) {
+      questionEl.value = text;
+      questionEl.focus();
+    }
+
     scenarioEl.addEventListener('change', () => {
-      if (scenarioEl.value) questionEl.value = scenarioEl.value;
+      if (scenarioEl.value) setScenarioText(scenarioEl.value);
     });
 
     document.getElementById('fillScenario').addEventListener('click', () => {
-      if (scenarioEl.value) questionEl.value = scenarioEl.value;
+      if (scenarioEl.value) setScenarioText(scenarioEl.value);
     });
-
-    document.getElementById('example1').addEventListener('click', () => {
-      questionEl.value = examples['Example 1'];
-    });
-
-    document.getElementById('example2').addEventListener('click', () => {
-      questionEl.value = examples['Example 2'];
-    });
+    document.getElementById('example1').addEventListener('click', () => setScenarioText(examples.example1));
+    document.getElementById('example2').addEventListener('click', () => setScenarioText(examples.example2));
 
     document.getElementById('clear').addEventListener('click', () => {
       questionEl.value = '';
-      resultEl.textContent = '아직 실행 전입니다.';
+      summaryEl.textContent = '아직 실행 전입니다. 질문을 넣고 Run Test를 눌러보세요.';
+      draftTextEl.textContent = '초안 결과가 여기에 표시됩니다.';
+      rawJsonEl.textContent = '아직 실행 전입니다.';
+      routerValueEl.textContent = '-';
+      searchValueEl.textContent = '-';
+      draftValueEl.textContent = '-';
+      runStateEl.textContent = '대기 중';
     });
+
+    document.getElementById('jumpInput').addEventListener('click', () => {
+      document.getElementById('inputCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.getElementById('jumpResult').addEventListener('click', () => {
+      document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('copyJson').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(rawJsonEl.textContent || '');
+        runStateEl.textContent = 'JSON copied';
+      } catch {
+        runStateEl.textContent = 'copy failed';
+      }
+    });
+
+    function renderResponse(data) {
+      const routerLabel = data?.router?.label ?? '-';
+      const searchStatus = data?.search?.match_status ?? 'n/a';
+      const draftStatus = data?.draft?.status ?? 'n/a';
+      const responseText = data?.router?.response || data?.draft?.draft_answer || '표시할 답변이 없습니다.';
+
+      routerValueEl.textContent = routerLabel;
+      searchValueEl.textContent = searchStatus;
+      draftValueEl.textContent = draftStatus;
+
+      summaryEl.innerHTML = [
+        `<strong>입력:</strong> ${escapeHtml(data?.text ?? '')}`,
+        `<strong>판단:</strong> ${escapeHtml(data?.router?.reason ?? '-')}`,
+        `<strong>검색 근거:</strong> ${escapeHtml(data?.search?.reason ?? 'n/a')}`,
+        `<strong>후속 행동:</strong> ${escapeHtml(data?.search?.next_action ?? 'n/a')}`,
+      ].join('<br>');
+
+      draftTextEl.innerHTML = [
+        `<strong>${escapeHtml(data?.draft?.status ?? 'n/a')}</strong>`,
+        `<br>${escapeHtml(responseText)}`,
+      ].join('');
+
+      rawJsonEl.textContent = JSON.stringify(data, null, 2);
+      runStateEl.textContent = '완료';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
 
     document.getElementById('run').addEventListener('click', async () => {
       const endpoint = endpointEl.value.trim();
@@ -244,34 +841,34 @@
       const text = questionEl.value.trim();
 
       if (!endpoint || !apikey || !text) {
-        resultEl.textContent = 'endpoint, key, question을 모두 입력해 주세요.';
+        runStateEl.textContent = '입력 필요';
+        summaryEl.textContent = 'endpoint, key, question을 모두 입력해 주세요.';
         return;
       }
 
-      resultEl.textContent = '실행 중...';
+      runStateEl.textContent = '실행 중';
+      summaryEl.textContent = '함수 호출 중...';
+      draftTextEl.textContent = '초안 생성 중...';
+      rawJsonEl.textContent = '실행 중...';
 
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
-            'authorization': `Bearer ${apikey}`,
-            'apikey': apikey,
+            authorization: `Bearer ${apikey}`,
+            apikey,
           },
           body: JSON.stringify({ text }),
         });
 
         const data = await response.json();
-        const summary = [
-          `router: ${data?.router?.label ?? '-'}`,
-          `search: ${data?.search?.match_status ?? 'n/a'}`,
-          `draft: ${data?.draft?.status ?? 'n/a'}`,
-          '',
-          JSON.stringify(data, null, 2),
-        ].join('\n');
-        resultEl.textContent = summary;
+        renderResponse(data);
       } catch (error) {
-        resultEl.textContent = `오류: ${error.message}`;
+        runStateEl.textContent = '오류';
+        summaryEl.textContent = `오류: ${error.message}`;
+        draftTextEl.textContent = '호출 실패';
+        rawJsonEl.textContent = `오류: ${error.message}`;
       }
     });
   </script>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manual VOC Tester</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5eefb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #fb7185;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.03em;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+    .card {
+      background: color-mix(in srgb, var(--panel) 90%, black 10%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.25);
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      outline: none;
+      font: inherit;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stack { display: grid; gap: 12px; }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary { background: var(--accent); color: #00111f; font-weight: 700; }
+    .ghost { background: var(--panel-2); color: var(--text); }
+    .success { background: var(--accent-2); color: #052e12; font-weight: 700; }
+    .danger { background: var(--danger); color: #3f0d18; font-weight: 700; }
+    .result {
+      background: #07101d;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      min-height: 360px;
+      overflow: auto;
+      padding: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.14);
+      color: #7dd3fc;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="pill">Stage 4 tester</span>
+        <span class="pill">router + search + draft</span>
+      </div>
+      <h1>Manual VOC Tester</h1>
+      <p>질문을 넣으면 라우터 분기, 유사문 검색, 답변 초안을 한 번에 확인할 수 있는 브라우저 테스트 페이지입니다.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>질문 입력</h2>
+        <div class="stack">
+          <div class="row">
+            <div>
+              <label for="endpoint">Endpoint URL</label>
+              <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
+            </div>
+            <div>
+              <label for="apikey">Supabase Key</label>
+              <input id="apikey" placeholder="anon or publishable key">
+            </div>
+          </div>
+          <div>
+            <label for="question">질문</label>
+            <textarea id="question" placeholder="예: 실손보험료가 왜 올라요?"></textarea>
+          </div>
+          <div>
+            <label for="scenario">시나리오 선택</label>
+            <select id="scenario">
+              <option value="">직접 입력</option>
+              <option>안녕하세요</option>
+              <option>실손보험료가 왜 올라요?</option>
+              <option>변액연금 연금개시연령 변경 가능한가요?</option>
+              <option>종신보험 납입기간 변경하고 싶어요</option>
+              <option>간병보험 보험금 청구방법 알려주세요</option>
+              <option>변액유니버설 펀드변경 가능해요?</option>
+              <option>보험료를 알려줘</option>
+              <option>이 문의는 어느 부서가 봐야 하나요?</option>
+              <option>종합보험 종합보장 확인</option>
+              <option>유병자보험 가입가능 여부 알려줘</option>
+            </select>
+          </div>
+          <div class="buttons">
+            <button class="primary" id="run">Run Test</button>
+            <button class="ghost" id="fillScenario">Fill Selected</button>
+            <button class="success" id="example1">Example 1</button>
+            <button class="ghost" id="clear">Clear</button>
+          </div>
+          <div class="hint">CORS는 `manual-voc-flow` 함수에 이미 설정되어 있어서 브라우저에서 바로 호출 가능합니다.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>결과</h2>
+        <div id="result" class="result">아직 실행 전입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const endpointEl = document.getElementById('endpoint');
+    const apikeyEl = document.getElementById('apikey');
+    const questionEl = document.getElementById('question');
+    const scenarioEl = document.getElementById('scenario');
+    const resultEl = document.getElementById('result');
+
+    const examples = {
+      'Example 1': '안녕하세요',
+    };
+
+    scenarioEl.addEventListener('change', () => {
+      if (scenarioEl.value) questionEl.value = scenarioEl.value;
+    });
+
+    document.getElementById('fillScenario').addEventListener('click', () => {
+      if (scenarioEl.value) questionEl.value = scenarioEl.value;
+    });
+
+    document.getElementById('example1').addEventListener('click', () => {
+      questionEl.value = examples['Example 1'];
+    });
+
+    document.getElementById('clear').addEventListener('click', () => {
+      questionEl.value = '';
+      resultEl.textContent = '아직 실행 전입니다.';
+    });
+
+    document.getElementById('run').addEventListener('click', async () => {
+      const endpoint = endpointEl.value.trim();
+      const apikey = apikeyEl.value.trim();
+      const text = questionEl.value.trim();
+
+      if (!endpoint || !apikey || !text) {
+        resultEl.textContent = 'endpoint, key, question을 모두 입력해 주세요.';
+        return;
+      }
+
+      resultEl.textContent = '실행 중...';
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': `Bearer ${apikey}`,
+            'apikey': apikey,
+          },
+          body: JSON.stringify({ text }),
+        });
+
+        const data = await response.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultEl.textContent = `오류: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

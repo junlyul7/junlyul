@@ -13,6 +13,12 @@ Copy `voc-test-env.example` to your local environment and fill in the key values
 .\run-manual-voc-test.ps1 -Text "실손보험료가 왜 올라요?"
 ```
 
+Or open the browser tester:
+
+```powershell
+.\launch-manual-voc-tester.ps1
+```
+
 ## 3. Compare the result
 
 Check these fields in the JSON response:
@@ -23,6 +29,17 @@ Check these fields in the JSON response:
 - `search.matched_rows[0].reference_doc_id`
 - `draft.status`
 - `draft.draft_answer`
+
+## 3. Browser tester
+
+Open `manual-voc-tester.html`, paste your key, type a question, and click `Run Test`.
+
+The page shows:
+
+- router label and response
+- search match status
+- top matching `DOC-00x`
+- draft text
 
 ## 4. Run the sample scenarios
 

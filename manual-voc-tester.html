@@ -181,9 +181,11 @@
             <button class="primary" id="run">Run Test</button>
             <button class="ghost" id="fillScenario">Fill Selected</button>
             <button class="success" id="example1">Example 1</button>
+            <button class="success" id="example2">Example 2</button>
             <button class="ghost" id="clear">Clear</button>
           </div>
           <div class="hint">CORS는 `manual-voc-flow` 함수에 이미 설정되어 있어서 브라우저에서 바로 호출 가능합니다.</div>
+          <div class="hint">Endpoint와 Key는 브라우저에 저장되어 다음 실행 때 자동으로 불러옵니다.</div>
         </div>
       </div>
 
@@ -200,10 +202,20 @@
     const questionEl = document.getElementById('question');
     const scenarioEl = document.getElementById('scenario');
     const resultEl = document.getElementById('result');
+    const storageKeys = {
+      endpoint: 'manual-voc-endpoint',
+      apikey: 'manual-voc-apikey',
+    };
 
     const examples = {
       'Example 1': '안녕하세요',
+      'Example 2': '종신보험료 알려줘',
     };
+
+    endpointEl.value = localStorage.getItem(storageKeys.endpoint) || endpointEl.value;
+    apikeyEl.value = localStorage.getItem(storageKeys.apikey) || '';
+    endpointEl.addEventListener('input', () => localStorage.setItem(storageKeys.endpoint, endpointEl.value));
+    apikeyEl.addEventListener('input', () => localStorage.setItem(storageKeys.apikey, apikeyEl.value));
 
     scenarioEl.addEventListener('change', () => {
       if (scenarioEl.value) questionEl.value = scenarioEl.value;
@@ -215,6 +227,10 @@
 
     document.getElementById('example1').addEventListener('click', () => {
       questionEl.value = examples['Example 1'];
+    });
+
+    document.getElementById('example2').addEventListener('click', () => {
+      questionEl.value = examples['Example 2'];
     });
 
     document.getElementById('clear').addEventListener('click', () => {
@@ -246,7 +262,14 @@
         });
 
         const data = await response.json();
-        resultEl.textContent = JSON.stringify(data, null, 2);
+        const summary = [
+          `router: ${data?.router?.label ?? '-'}`,
+          `search: ${data?.search?.match_status ?? 'n/a'}`,
+          `draft: ${data?.draft?.status ?? 'n/a'}`,
+          '',
+          JSON.stringify(data, null, 2),
+        ].join('\n');
+        resultEl.textContent = summary;
       } catch (error) {
         resultEl.textContent = `오류: ${error.message}`;
       }

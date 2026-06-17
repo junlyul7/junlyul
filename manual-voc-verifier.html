@@ -439,6 +439,7 @@
 
   <script>
     const ENDPOINT = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
+    const DEFAULT_API_KEY = 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu';
     const STORAGE = {
       key: 'manual-voc-apikey',
     };
@@ -615,8 +616,9 @@
       const actualSearch = data?.search?.match_status || '-';
       const actualDraft = data?.draft?.status || '-';
       const actualText = data?.draft?.draft_answer || data?.router?.response || '-';
-      const manual = data?.search?.matched_rows?.[0]?.reference_doc_name || '-';
-      const system = data?.search?.matched_rows?.[0]?.screen_path || '-';
+      const row = data?.search?.matched_rows?.[0] || null;
+      const manual = row?.reference_doc_name || '-';
+      const system = row?.screen_path || '-';
       const passRouter = score(actualRouter, scenario.expect.router) === 'PASS';
       const passSearch = scenario.expect.search ? score(actualSearch, scenario.expect.search) === 'PASS' : actualSearch === '-';
       const passDraft = scenario.expect.draftSnippet ? String(actualText).includes(scenario.expect.draftSnippet) : actualDraft === '-' || actualDraft === 'answer_unavailable' || actualDraft === 'draftable';
@@ -642,7 +644,7 @@
     }
 
     async function callFlow(text) {
-      const key = apikeyEl.value.trim() || localStorage.getItem(STORAGE.key) || '';
+      const key = apikeyEl.value.trim() || localStorage.getItem(STORAGE.key) || DEFAULT_API_KEY;
       if (!key) throw new Error('Supabase Key를 입력해 주세요.');
       const res = await fetch(ENDPOINT, {
         method: 'POST',
@@ -736,7 +738,8 @@
       preview();
     });
     questionEl.addEventListener('input', preview);
-    apikeyEl.value = localStorage.getItem(STORAGE.key) || '';
+    const savedKey = localStorage.getItem(STORAGE.key) || '';
+    apikeyEl.value = savedKey && /^(sb_publishable_|eyJ)/.test(savedKey) ? savedKey : DEFAULT_API_KEY;
     apikeyEl.addEventListener('input', () => localStorage.setItem(STORAGE.key, apikeyEl.value));
 
     document.getElementById('runAll').addEventListener('click', runAll);

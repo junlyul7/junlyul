@@ -716,11 +716,11 @@
       const row = data?.search?.matched_rows?.[0] || null;
       const routerReason = data?.router?.reason || '-';
       const searchReason = data?.search?.reason || '-';
-      const answer = data?.draft?.draft_answer || data?.router?.response || `표시할 답변이 없습니다.\n\n라우터: ${routerReason}\n검색: ${searchReason}`;
-      const manualText = row && /매뉴얼|manual/i.test(String(row.standard_answer || ''))
+      const answer = data?.draft?.draft_answer || row?.standard_answer || data?.router?.response || `표시할 답변이 없습니다.\n\n라우터: ${routerReason}\n검색: ${searchReason}`;
+      const manualText = row
         ? [row.reference_doc_name, row.reference_file_path].filter(Boolean).join('\n')
         : '';
-      const systemText = row && /시스템|화면|조회/i.test(String(row.standard_answer || ''))
+      const systemText = row
         ? [row.system_name, row.screen_path].filter(Boolean).join('\n')
         : '';
 
@@ -733,6 +733,7 @@
       rawJsonEl.textContent = JSON.stringify(data, null, 2);
       lastJson = rawJsonEl.textContent;
       runStateEl.textContent = '완료';
+      renderPreview();
     }
 
     function syncQuestionWithProduct() {

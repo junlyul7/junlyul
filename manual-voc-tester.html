@@ -504,6 +504,15 @@
       '저축보험', 'CI보험', '교육보험', '소득보장보험', '여성보험', '갱신형건강보험', '공시이율종신보험',
       '종신연금보험', '간편보험',
     ];
+    const INQUIRY_TO_PRODUCT = {
+      '보험료 상승 사유': '실손보험',
+      '보장내용 확인': '암보험',
+      '가입금액 변경': '정기보험',
+      '적립금 조회': '변액저축보험',
+      '간편심사 조건': '간편보험',
+      '펀드변경': '변액유니버설',
+      '연금개시연령 변경': '변액연금',
+    };
 
     const endpointEl = document.getElementById('endpoint');
     const apikeyEl = document.getElementById('apikey');
@@ -540,7 +549,88 @@
     }
 
     function buildText() {
-      return [productInputEl.value.trim(), questionEl.value.trim()].filter(Boolean).join(' ').trim();
+      const product = getEffectiveProduct();
+      const question = questionEl.value.trim();
+      const normalizedQuestion = normalizeInquiryHint(question);
+      return [product, normalizedQuestion].filter(Boolean).join(' ').trim();
+    }
+
+    function getEffectiveProduct() {
+      const explicit = productInputEl.value.trim();
+      if (explicit) return explicit;
+      const canonical = deriveInquiryCanonical(questionEl.value.trim());
+      return INQUIRY_TO_PRODUCT[canonical] || '';
+    }
+
+    function deriveInquiryCanonical(question) {
+      const q = String(question || '').trim();
+      const compact = normalize(q);
+
+      if (!q) return '';
+
+      const aliases = [
+        {
+          test: () => compact.includes('보험료') && (compact.includes('오르') || compact.includes('올라') || compact.includes('상승') || compact.includes('인상')),
+          canonical: '보험료 상승 사유',
+        },
+        {
+          test: () => compact.includes('보장내용') || (compact.includes('보장') && compact.includes('확인')),
+          canonical: '보장내용 확인',
+        },
+        {
+          test: () => compact.includes('가입금액') && compact.includes('변경'),
+          canonical: '가입금액 변경',
+        },
+        {
+          test: () => compact.includes('적립금') && (compact.includes('조회') || compact.includes('알려') || compact.includes('방법')),
+          canonical: '적립금 조회',
+        },
+        {
+          test: () => compact.includes('간편심사') && (compact.includes('조건') || compact.includes('알려') || compact.includes('말해')),
+          canonical: '간편심사 조건',
+        },
+        {
+          test: () => compact.includes('펀드') && (compact.includes('변경') || compact.includes('교체')),
+          canonical: '펀드변경',
+        },
+        {
+          test: () => compact.includes('연금') && (compact.includes('개시') || compact.includes('개시연령') || compact.includes('시작연령')),
+          canonical: '연금개시연령 변경',
+        },
+      ];
+
+      const matched = aliases.find((item) => item.test());
+      return matched ? matched.canonical : q;
+    }
+
+    function normalizeInquiryHint(question) {
+      const q = String(question || '').trim();
+      if (!q) return '';
+      const canonical = deriveInquiryCanonical(q);
+      if (normalize(q).includes(normalize(canonical))) return q;
+      if (canonical === q) return q;
+      return `${canonical} ${q}`.trim();
+    }
+
+    function buildRequestVariants() {
+      const product = getEffectiveProduct();
+      const question = questionEl.value.trim();
+      const canonical = deriveInquiryCanonical(question);
+      const normalizedQuestion = normalizeInquiryHint(question);
+      const variants = [];
+
+      const primary = [product, canonical].filter(Boolean).join(' ').trim();
+      if (primary) variants.push(primary);
+
+      const fallback = [product, question].filter(Boolean).join(' ').trim();
+      if (fallback && fallback !== primary) variants.push(fallback);
+
+      const normalized = [product, normalizedQuestion].filter(Boolean).join(' ').trim();
+      if (normalized && !variants.includes(normalized)) {
+        variants.push(normalized);
+      }
+
+      return variants;
     }
 
     function setSelectedProduct(value) {
@@ -553,12 +643,16 @@
     }
 
     function renderPreview() {
-      const product = selectedProduct || productInputEl.value.trim() || '-';
+      const effectiveProduct = getEffectiveProduct();
+      const product = selectedProduct || productInputEl.value.trim() || effectiveProduct || '-';
       const question = questionEl.value.trim() || '-';
       const request = buildText() || '-';
+      const normalizedQuestion = normalizeInquiryHint(questionEl.value.trim()) || '-';
       productPreviewEl.innerHTML = `
         대표 상품: ${escapeHtml(product)}<br>
+        자동 감지 상품: ${escapeHtml(effectiveProduct || '-') }<br>
         문의내용: ${escapeHtml(question)}<br>
+        정규화 문장: ${escapeHtml(normalizedQuestion)}<br>
         전송 문장: ${escapeHtml(request)}
       `;
     }
@@ -598,7 +692,15 @@
 
     function renderResponse(data) {
       const row = data?.search?.matched_rows?.[0] || null;
-      const answer = data?.draft?.draft_answer || row?.standard_answer || data?.router?.response || '표시할 답변이 없습니다.';
+      const selectedOrEffectiveProduct = selectedProduct || productInputEl.value.trim() || getEffectiveProduct();
+      const usedText = data?._tester?.used_text || '-';
+      const answer = data?.draft?.draft_answer
+        || row?.standard_answer
+        || data?.router?.response
+        || data?.search?.reason
+        || (selectedOrEffectiveProduct
+          ? '표시할 답변이 없습니다. 선택한 상품으로는 현재 답변을 찾지 못했습니다.'
+          : '표시할 답변이 없습니다. 상품종류를 함께 선택해 주세요.');
       const manualText = row ? [row.reference_doc_name, row.reference_file_path].filter(Boolean).join('\n') : '-';
       const systemText = row ? [row.system_name, row.screen_path].filter(Boolean).join('\n') : '-';
 
@@ -609,21 +711,49 @@
       answerTextEl.textContent = answer;
       manualValueEl.textContent = manualText;
       systemValueEl.textContent = systemText;
-      rawJsonEl.textContent = JSON.stringify(data, null, 2);
+      rawJsonEl.textContent = JSON.stringify({
+        ...data,
+        _tester: {
+          ...(data?._tester || {}),
+          selected_product: selectedOrEffectiveProduct || '',
+          used_text: usedText,
+        },
+      }, null, 2);
       runStateEl.textContent = '완료';
+    }
+
+    function hasUsefulResult(data) {
+      return Boolean(
+        data?.draft?.draft_answer ||
+        data?.search?.matched_rows?.length ||
+        data?.router?.response
+      );
+    }
+
+    async function callFlow(text, apikey) {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${apikey}`,
+          apikey,
+        },
+        body: JSON.stringify({ text }),
+      });
+      return await res.json();
     }
 
     async function run() {
       const apikey = apikeyEl.value.trim() || localStorage.getItem(STORAGE_KEY) || '';
-      const text = buildText();
+      const textVariants = buildRequestVariants();
       if (!apikey) {
         runStateEl.textContent = 'Key 필요';
         answerTextEl.textContent = 'Supabase Key를 입력해 주세요.';
         return;
       }
-      if (!text) {
+      if (!textVariants.length) {
         runStateEl.textContent = '입력 필요';
-        answerTextEl.textContent = '상품종류와 문의내용을 입력해 주세요.';
+        answerTextEl.textContent = '상품종류를 선택하거나 문의유형을 함께 입력해 주세요.';
         return;
       }
 
@@ -632,17 +762,21 @@
       rawJsonEl.textContent = '실행 중...';
 
       try {
-        const res = await fetch(ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            authorization: `Bearer ${apikey}`,
-            apikey,
-          },
-          body: JSON.stringify({ text }),
-        });
+        let data = null;
+        let usedText = '';
+        for (const candidate of textVariants) {
+          const result = await callFlow(candidate, apikey);
+          data = result;
+          usedText = candidate;
+          if (hasUsefulResult(result)) break;
+        }
 
-        const data = await res.json();
+        if (data && usedText) {
+          data = { ...data, _tester: { used_text: usedText, variants: textVariants } };
+        }
+        if (!data?.draft?.draft_answer && !data?.search?.matched_rows?.length) {
+          answerTextEl.textContent = `표시할 답변이 없습니다. 전송 문장: ${textVariants[0] || '-'}`;
+        }
         renderResponse(data);
       } catch (error) {
         runStateEl.textContent = '오류';

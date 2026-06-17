@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>manual-voc simple tester</title>
+  <style>
+    :root {
+      --bg: #f7f2e8;
+      --card: #fffdf7;
+      --line: #1f1f1f;
+      --shadow: 0 8px 0 rgba(31, 31, 31, 0.9);
+      --accent: #f2c94c;
+      --accent-2: #9fe3d3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: #111;
+      padding: 24px;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    .title {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin: 0 0 8px;
+    }
+    .desc {
+      margin: 0 0 16px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 3px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .full { grid-column: 1 / -1; }
+    h2 { margin: 0 0 14px; font-size: 22px; }
+    .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    label { font-size: 14px; font-weight: 800; }
+    input, textarea {
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 16px;
+      background: #fff;
+      color: #111;
+      outline: none;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      appearance: none;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 900;
+      background: #fff;
+      box-shadow: 0 5px 0 rgba(31, 31, 31, 0.9);
+      cursor: pointer;
+      color: #111;
+    }
+    .primary { background: var(--accent); }
+    .secondary { background: var(--accent-2); }
+    .mono {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+      background: #fff;
+      border: 3px dashed #bbb;
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 180px;
+    }
+    .big {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      font-size: 18px;
+    }
+    .products {
+      max-height: 240px;
+      overflow: auto;
+      border: 3px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .product { width: 100%; text-align: left; }
+    .active { background: #fff1a6; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: #eef7f1;
+      font-weight: 800;
+      margin-left: 8px;
+    }
+    .hint { color: #666; font-size: 13px; line-height: 1.6; margin-top: 10px; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .products { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">삼성생명 상품문의 응대 지원봇</div>
+    <p class="desc">이 화면은 검증된 흐름만 남긴 간단한 테스트용입니다. 선택 상품, 실제 전송 문장, 백엔드 응답만 빠르게 확인할 수 있어요.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>입력</h2>
+        <div class="field">
+          <label for="endpoint">Endpoint URL</label>
+          <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
+        </div>
+        <div class="field">
+          <label for="apikey">Supabase Key</label>
+          <input id="apikey" type="password" placeholder="anon or publishable key">
+        </div>
+        <div class="field">
+          <label for="productSearch">상품 검색</label>
+          <input id="productSearch" placeholder="예: 실손, 변액연금, 간편보험">
+        </div>
+        <div class="field">
+          <label for="question">문의내용</label>
+          <textarea id="question" placeholder="예: 보험료 상승 사유"></textarea>
+        </div>
+        <div class="row">
+          <button class="primary" id="runBtn" type="button">답변 생성</button>
+          <button class="secondary" id="clearBtn" type="button">초기화</button>
+          <button id="presetBtn" type="button">실손 예시</button>
+        </div>
+        <div class="hint">상품을 선택한 뒤 질문을 넣으면 실제 전송 문장을 아래 결과에서 바로 확인할 수 있습니다.</div>
+      </section>
+
+      <section class="card">
+        <h2>상품 목록</h2>
+        <div class="products" id="products"></div>
+      </section>
+
+      <section class="card full">
+        <h2>전송 문장</h2>
+        <div class="big" id="summary">아직 실행 전입니다.</div>
+      </section>
+
+      <section class="card full">
+        <h2>답변 내용</h2>
+        <div class="big" id="answer">아직 실행 전입니다.</div>
+      </section>
+
+      <section class="card full">
+        <h2>Raw JSON</h2>
+        <div class="mono" id="raw">아직 실행 전입니다.</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINT = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
+    const STORAGE_KEY = 'manual-voc-simple-key';
+    const PRODUCTS = [
+      '실손보험', '건강보험', '암보험', '정기보험', '종신보험', '간편보험', '유병자보험',
+      '변액저축보험', '변액유니버설', '변액연금', '연금저축', '일반연금', '즉시연금', '종합보험',
+      '어린이보험', '치아보험', '치매보험', '간병보험', '재해보험', '상해보험', '운전자보험',
+      '저축보험', 'CI보험', '교육보험', '소득보장보험', '여성보험', '갱신형건강보험', '공시이율종신보험',
+      '종신연금보험', '간편보험',
+    ];
+
+    const productAliases = {
+      실손: '실손보험',
+      연금: '변액연금',
+      종신: '종신보험',
+      암: '암보험',
+      간편: '간편보험',
+      유병자: '유병자보험',
+      변액저축: '변액저축보험',
+      변액유니버설: '변액유니버설',
+      간병: '간병보험',
+    };
+
+    const el = {
+      endpoint: document.getElementById('endpoint'),
+      apikey: document.getElementById('apikey'),
+      productSearch: document.getElementById('productSearch'),
+      question: document.getElementById('question'),
+      products: document.getElementById('products'),
+      summary: document.getElementById('summary'),
+      answer: document.getElementById('answer'),
+      raw: document.getElementById('raw'),
+      runBtn: document.getElementById('runBtn'),
+      clearBtn: document.getElementById('clearBtn'),
+      presetBtn: document.getElementById('presetBtn'),
+    };
+
+    function normalize(v) {
+      return String(v || '').toLowerCase().replace(/\s+/g, '').replace(/[^0-9a-z가-힣]/g, '');
+    }
+
+    function deriveInquiryCanonical(question) {
+      const q = normalize(question);
+      if (!q) return '';
+      if (q.includes('보험료') && (q.includes('오르') || q.includes('올라') || q.includes('상승') || q.includes('인상'))) return '보험료 상승 사유';
+      if (q.includes('보장내용') || (q.includes('보장') && q.includes('확인'))) return '보장내용 확인';
+      if (q.includes('가입금액') && q.includes('변경')) return '가입금액 변경';
+      if (q.includes('적립금') && (q.includes('조회') || q.includes('알려') || q.includes('방법'))) return '적립금 조회';
+      if (q.includes('추가납입')) return '추가납입 반영';
+      if (q.includes('간편심사') && (q.includes('조건') || q.includes('알려') || q.includes('말해'))) return '간편심사 조건';
+      if (q.includes('펀드') && (q.includes('변경') || q.includes('교체'))) return '펀드변경';
+      if (q.includes('연금') && (q.includes('개시연령') || q.includes('개시나이') || (q.includes('개시') && q.includes('나이')))) return '연금개시연령 변경';
+      return String(question || '').trim();
+    }
+
+    function getEffectiveProduct() {
+      const q = normalize(el.question.value);
+      if (q.includes('보험료') && (q.includes('오르') || q.includes('올라') || q.includes('상승'))) return '실손보험';
+      if (q.includes('보장내용') || (q.includes('보장') && q.includes('확인'))) return '암보험';
+      if (q.includes('가입금액') && q.includes('변경')) return '정기보험';
+      if (q.includes('적립금')) return '변액저축보험';
+      if (q.includes('연금저축')) return '연금저축';
+      if (q.includes('간편심사')) return '간편보험';
+      if (q.includes('펀드')) return '변액유니버설';
+      if (q.includes('연금')) return '변액연금';
+      return '';
+    }
+
+    function buildText() {
+      const product = getEffectiveProduct();
+      const question = deriveInquiryCanonical(el.question.value.trim());
+      return [product, question].filter(Boolean).join(' ').trim();
+    }
+
+    function renderProducts() {
+      const q = normalize(el.productSearch.value);
+      const list = PRODUCTS.filter((p) => normalize(p).includes(q));
+      el.products.innerHTML = list.length
+        ? list.map((p) => `<button class="product ${p === getEffectiveProduct() ? 'active' : ''}" data-p="${p}">${p}</button>`).join('')
+        : '<div style="color:#666;font-size:14px;">검색 결과가 없습니다.</div>';
+      el.products.querySelectorAll('button[data-p]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          el.productSearch.value = btn.dataset.p || '';
+          renderProducts();
+        });
+      });
+    }
+
+    async function run() {
+      const apikey = el.apikey.value.trim() || localStorage.getItem(STORAGE_KEY) || '';
+      const text = buildText();
+      const selected = getEffectiveProduct();
+      if (!apikey) {
+        el.answer.textContent = 'Supabase Key를 입력해 주세요.';
+        return;
+      }
+      if (!text) {
+        el.answer.textContent = '상품종류와 문의내용을 입력해 주세요.';
+        return;
+      }
+
+      const payload = { text };
+      el.summary.textContent = JSON.stringify({
+        selected_product: selected || '',
+        effective_product: getEffectiveProduct(),
+        text,
+        payload,
+      }, null, 2);
+      el.answer.textContent = '실행 중...';
+      el.raw.textContent = '실행 중...';
+
+      try {
+        const res = await fetch(el.endpoint.value.trim() || ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${apikey}`,
+            apikey,
+          },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        el.answer.textContent = data?.draft?.draft_answer
+          || data?.search?.matched_rows?.[0]?.standard_answer
+          || data?.router?.response
+          || data?.search?.reason
+          || '표시할 답변이 없습니다.';
+        el.raw.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        el.answer.textContent = `오류: ${error.message}`;
+        el.raw.textContent = `오류: ${error.message}`;
+      }
+    }
+
+    el.apikey.value = localStorage.getItem(STORAGE_KEY) || '';
+    el.apikey.addEventListener('input', () => localStorage.setItem(STORAGE_KEY, el.apikey.value));
+    el.productSearch.addEventListener('input', renderProducts);
+      el.question.addEventListener('input', () => {
+        el.summary.textContent = JSON.stringify({
+          selected_product: getEffectiveProduct() || '',
+          effective_product: getEffectiveProduct(),
+          canonical_question: deriveInquiryCanonical(el.question.value.trim()),
+          text: buildText(),
+        }, null, 2);
+      });
+    el.runBtn.addEventListener('click', run);
+    el.clearBtn.addEventListener('click', () => {
+      el.productSearch.value = '';
+      el.question.value = '';
+      el.summary.textContent = '아직 실행 전입니다.';
+      el.answer.textContent = '아직 실행 전입니다.';
+      el.raw.textContent = '아직 실행 전입니다.';
+      renderProducts();
+    });
+      el.presetBtn.addEventListener('click', () => {
+        el.productSearch.value = '실손';
+        el.question.value = '보험료 상승 사유';
+        el.summary.textContent = JSON.stringify({
+          selected_product: '실손보험',
+          effective_product: '실손보험',
+          canonical_question: '보험료 상승 사유',
+          text: buildText(),
+        }, null, 2);
+        renderProducts();
+      });
+
+    renderProducts();
+  </script>
+</body>
+</html>

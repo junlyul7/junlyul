@@ -60,6 +60,35 @@
     }
     textarea { min-height: 120px; resize: vertical; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 2px;
+    }
+    .selection-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(31, 31, 31, 0.12);
+    }
+    .selection-line .label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .selection-line .hint-inline {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.5;
+    }
     button, a.button {
       appearance: none;
       border: 3px solid var(--line);
@@ -147,12 +176,13 @@
           <label for="question">문의내용</label>
           <textarea id="question" placeholder="예: 보험료 상승 사유"></textarea>
         </div>
-        <div class="row">
+        <div class="actions">
           <button class="primary" id="runBtn" type="button">답변 생성</button>
           <button class="secondary" id="clearBtn" type="button">초기화</button>
-        </div>
-        <div style="margin-top: 14px;">
-          <span>선택 상품</span><span class="pill" id="selectedProduct">미선택</span>
+          <div class="selection-line" style="flex: 1 1 280px; margin-top: 0; padding-top: 0; border-top: 0;">
+            <div class="label">선택 상품(상품명)<span class="pill" id="selectedProduct">미선택</span></div>
+            <div class="hint-inline">상품을 선택하면 문의 내용과 함께 아래 결과에 반영됩니다.</div>
+          </div>
         </div>
         <div class="hint">상품을 선택한 뒤 질문을 넣으면 실제 전송 문장을 아래 결과에서 바로 확인할 수 있습니다.</div>
       </section>

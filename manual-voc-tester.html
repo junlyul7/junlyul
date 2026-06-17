@@ -6,118 +6,113 @@
   <title>삼성생명 상품문의 응대 지원봇</title>
   <style>
     :root {
-      --bg: #fff7d7;
-      --panel: #fbf7ea;
-      --panel-soft: #fefcf4;
-      --ink: #181818;
-      --muted: #615a4f;
+      --bg: #ffffff;
+      --panel: #fffdf7;
+      --panel-soft: #faf7ef;
+      --ink: #161616;
+      --muted: #686159;
       --line: #1b1b1b;
-      --accent: #ffe66d;
-      --accent-2: #9ee7b4;
-      --accent-3: #c9b7ff;
-      --accent-4: #ffe0b3;
-      --shadow: 0 8px 0 rgba(27, 27, 27, 1);
-      --radius: 26px;
+      --accent: #fff2a4;
+      --accent-2: #dff5e7;
+      --accent-3: #eaf3ff;
+      --shadow: 0 6px 0 rgba(27, 27, 27, 1);
+      --radius: 20px;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
+      background: var(--bg);
       color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 8%, rgba(255, 244, 167, 0.95), transparent 26%),
-        radial-gradient(circle at 88% 10%, rgba(255, 216, 231, 0.82), transparent 28%),
-        linear-gradient(180deg, #fff9dd 0%, #fff6e4 52%, #f6efde 100%);
-      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     .wrap {
-      max-width: 1360px;
+      max-width: 1320px;
       margin: 0 auto;
-      padding: 24px 18px 42px;
+      padding: 22px 18px 36px;
     }
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 18px;
       flex-wrap: wrap;
-      margin-bottom: 14px;
     }
-    .brand-block {
+    .title-block {
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
-    .brand {
-      display: inline-flex;
-      width: fit-content;
-      align-items: center;
-      padding: 10px 18px;
-      border: 4px solid var(--line);
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: var(--shadow);
+    .title {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 50px);
+      letter-spacing: -0.05em;
+      line-height: 1.08;
       font-weight: 900;
-      letter-spacing: -0.03em;
-      font-size: 18px;
     }
     .subtitle {
       margin: 0;
-      max-width: 960px;
+      max-width: 980px;
       color: var(--muted);
-      font-weight: 700;
-      line-height: 1.65;
+      line-height: 1.6;
       font-size: 14px;
+      font-weight: 600;
     }
-    .demo-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 18px;
-      border: 4px solid var(--line);
+    .demo {
+      align-self: flex-start;
+      padding: 8px 16px;
+      border: 3px solid var(--line);
       border-radius: 999px;
       background: var(--accent-2);
       box-shadow: var(--shadow);
       font-weight: 900;
-      letter-spacing: -0.03em;
-      font-size: 16px;
+      font-size: 15px;
     }
-    .hero-note {
-      margin: 10px 0 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
     }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 14px;
-      border: 3px solid var(--line);
-      border-radius: 999px;
-      background: var(--panel-soft);
-      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
-      font-weight: 800;
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+    .field label {
       font-size: 13px;
+      font-weight: 800;
     }
-    .chip.blue { background: #d8f3ff; }
-    .chip.green { background: #daf7de; }
-    .chip.orange { background: #ffe7cf; }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 12px 14px;
+      font: inherit;
+      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
+      outline: none;
+    }
+    .field textarea {
+      min-height: 170px;
+      resize: vertical;
+      line-height: 1.65;
+    }
     .layout {
       display: grid;
       gap: 16px;
     }
     .top-grid {
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 16px;
-    }
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
     .card {
-      background: var(--panel);
-      border: 4px solid var(--line);
+      border: 3px solid var(--line);
       border-radius: var(--radius);
+      background: var(--panel-soft);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
@@ -131,293 +126,229 @@
     }
     .card-head h2 {
       margin: 0;
-      font-size: 26px;
+      font-size: 24px;
       line-height: 1;
-      letter-spacing: -0.05em;
       font-weight: 900;
+      letter-spacing: -0.05em;
     }
-    .card-head .tag {
+    .badge {
       display: inline-flex;
-      padding: 9px 14px;
+      align-items: center;
+      padding: 7px 12px;
       border: 3px solid var(--line);
       border-radius: 999px;
-      background: #f7efef;
+      background: #f9f2d0;
       box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
-      font-weight: 900;
-      font-size: 13px;
+      font-weight: 800;
+      font-size: 12px;
     }
     .card-body { padding: 16px 18px 18px; }
-    .product-panel {
-      background: linear-gradient(180deg, #fbf7ea, #f7f0db);
-    }
-    .search-row {
+    .row {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px;
       margin-bottom: 12px;
     }
-    .field {
-      display: grid;
-      gap: 7px;
-    }
-    .field label {
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--ink);
-    }
-    .field input,
-    .field textarea,
-    .field select {
-      width: 100%;
-      border: 4px solid var(--line);
-      border-radius: 18px;
-      background: #fffef9;
-      color: var(--ink);
-      font: inherit;
-      padding: 13px 14px;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
-      outline: none;
-    }
-    .field textarea {
-      min-height: 240px;
-      resize: vertical;
-      line-height: 1.7;
-    }
-    .field input::placeholder,
-    .field textarea::placeholder {
-      color: #8a8477;
-    }
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
-    }
     .btn {
       appearance: none;
-      border: 4px solid var(--line);
+      border: 3px solid var(--line);
       border-radius: 999px;
-      background: #fffef8;
+      background: #fffdf6;
+      padding: 10px 14px;
+      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
       color: var(--ink);
       font: inherit;
-      font-weight: 900;
-      padding: 11px 16px;
+      font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
     }
-    .btn:hover { transform: translateY(-1px); }
     .btn.primary { background: var(--accent); }
+    .btn.soft { background: var(--accent-3); }
     .btn.green { background: var(--accent-2); }
-    .btn.soft { background: #f6f0ef; }
-    .btn.blue { background: #d7f4ff; }
-    .btn.small { padding: 8px 13px; font-size: 13px; }
-    .selected-block {
+    .btn.small { padding: 8px 12px; font-size: 13px; }
+    .selected {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
       margin-top: 12px;
     }
-    .selected-block .label {
+    .selected .label {
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 800;
       color: var(--muted);
     }
-    .selected-pill {
+    .pill {
       display: inline-flex;
       align-items: center;
-      padding: 8px 13px;
+      padding: 7px 12px;
       border: 3px solid var(--line);
       border-radius: 999px;
-      background: #dbf8df;
+      background: #dff5e7;
       box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
-      font-weight: 900;
-      font-size: 13px;
+      font-weight: 800;
+      font-size: 12px;
     }
-    .product-grid {
+    .product-preview {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 2px dashed rgba(27, 27, 27, 0.35);
+      border-radius: 16px;
+      background: #fffef7;
+      line-height: 1.7;
+      font-size: 13px;
+      font-weight: 600;
+      color: #2b261e;
+    }
+    .product-list {
+      margin-top: 12px;
+    }
+    .product-main {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 14px;
-      max-height: 360px;
-      overflow: auto;
-      padding-right: 4px;
+      margin-top: 10px;
     }
     .product-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
+      text-align: left;
+      width: 100%;
       border: 3px solid var(--line);
-      border-radius: 18px;
-      background: #fffdf5;
+      border-radius: 14px;
+      background: #fffdf6;
       box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
-      padding: 11px 12px;
+      padding: 10px 12px;
       cursor: pointer;
+      font: inherit;
       font-weight: 800;
-      line-height: 1.3;
-      min-height: 50px;
-      transition: transform 0.12s ease;
     }
-    .product-item:hover { transform: translateY(-1px); }
     .product-item.active {
       background: #ffe88b;
     }
-    .product-item .meta {
-      font-size: 12px;
-      color: var(--muted);
+    details.more {
+      margin-top: 8px;
+      border: 2px solid rgba(27, 27, 27, 0.14);
+      border-radius: 14px;
+      background: #fffef8;
+      padding: 8px 12px;
+    }
+    details.more summary {
+      cursor: pointer;
       font-weight: 800;
-      white-space: nowrap;
+    }
+    details.more summary::-webkit-details-marker { display: none; }
+    .more-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 240px;
+      overflow: auto;
+    }
+    .more-grid .product-item {
+      margin: 0;
     }
     .hint {
       margin-top: 12px;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.6;
-      font-weight: 700;
+      font-weight: 600;
     }
-    .preview-box {
-      margin-top: 12px;
-      border: 3px dashed rgba(27, 27, 27, 0.35);
-      border-radius: 18px;
-      background: #fffaf0;
-      padding: 12px 14px;
-      line-height: 1.7;
-      font-size: 13px;
-      color: #2a261f;
-      font-weight: 700;
+    .bottom-grid {
+      display: grid;
+      gap: 16px;
     }
-    .preview-box strong {
-      font-weight: 900;
-    }
-    .summary-card .card-body {
+    .answer-card .card-body {
       display: grid;
       gap: 14px;
     }
-    .status-row {
+    .summary {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
-    .status-box {
-      background: #fffdf5;
-      border: 4px solid var(--line);
-      border-radius: 20px;
+    .box {
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      background: #fffdf6;
+      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
       padding: 12px 14px;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
     }
-    .status-box .label {
+    .box .label {
       display: block;
       font-size: 12px;
       font-weight: 900;
       color: var(--muted);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
       margin-bottom: 8px;
     }
-    .status-box .value {
+    .box .value {
       font-size: 18px;
       font-weight: 900;
-      letter-spacing: -0.03em;
       word-break: break-word;
     }
-    .answer-box {
-      border: 4px solid var(--line);
-      border-radius: 22px;
-      background: #fffdf5;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
+    .answer-box,
+    .link-box,
+    .note-box {
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      background: #fffdf6;
+      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
       padding: 14px 16px;
-      min-height: 160px;
     }
     .answer-box h3,
     .link-box h3 {
       margin: 0 0 10px;
       font-size: 18px;
       font-weight: 900;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.03em;
     }
-    .answer-text {
+    .answer-text,
+    .link-value {
       white-space: pre-wrap;
-      line-height: 1.75;
+      line-height: 1.7;
       font-size: 14px;
-      font-weight: 700;
-      color: #232323;
+      font-weight: 600;
+      color: #252525;
+      min-height: 34px;
     }
     .link-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
-    .link-box {
-      border: 4px solid var(--line);
-      border-radius: 22px;
-      background: #fffdf5;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
-      padding: 14px 16px;
-      min-height: 120px;
-    }
-    .link-value {
-      white-space: pre-wrap;
-      line-height: 1.65;
-      color: #232323;
+    .note-box {
+      background: #f5f0df;
       font-size: 13px;
-      font-weight: 700;
-      min-height: 56px;
+      line-height: 1.7;
     }
-    .footer-note {
-      border: 4px solid var(--line);
-      border-radius: 20px;
-      background: #f5edd8;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
-      padding: 14px 16px;
-      color: #2a261f;
-      font-size: 13px;
-      line-height: 1.75;
-      font-weight: 700;
-    }
-    .footer-note strong {
-      font-weight: 900;
-    }
-    .raw-box {
-      border: 4px solid var(--line);
-      border-radius: 22px;
-      background: #fffdf5;
-      box-shadow: 0 6px 0 rgba(27, 27, 27, 1);
+    .raw {
+      margin-top: 12px;
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      background: #fffdf6;
+      box-shadow: 0 5px 0 rgba(27, 27, 27, 1);
       padding: 14px 16px;
     }
-    .raw-box summary {
+    .raw summary {
       cursor: pointer;
-      font-weight: 900;
-      font-size: 15px;
-      list-style: none;
+      font-weight: 800;
     }
-    .raw-box summary::-webkit-details-marker { display: none; }
-    .raw-box pre {
+    .raw summary::-webkit-details-marker { display: none; }
+    .raw pre {
       margin: 10px 0 0;
+      max-height: 280px;
+      overflow: auto;
       white-space: pre-wrap;
       word-break: break-word;
       font: 13px/1.6 Consolas, "Courier New", monospace;
-      color: #2a2a2a;
-      max-height: 320px;
-      overflow: auto;
-    }
-    .tiny {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 700;
-      line-height: 1.6;
     }
     @media (max-width: 1080px) {
+      .meta-row,
       .top-grid,
+      .summary,
       .link-row,
-      .status-row {
-        grid-template-columns: 1fr;
-      }
-      .search-row {
-        grid-template-columns: 1fr;
-      }
-      .product-grid {
+      .row,
+      .more-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -426,117 +357,110 @@
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="brand-block">
-        <div class="brand">삼성생명 상품문의 응대 지원봇</div>
+      <div class="title-block">
+        <h1 class="title">삼성생명 상품문의 응대 지원봇</h1>
         <p class="subtitle">
           이 지원봇은 상품 관련 문의에 대해 현장 및 상품 VOC 담당자들이 쉽게 활용할 수 있도록 제작되었습니다.
-          Vercel 배포 전 구성과 흐름을 먼저 확인하는 교육용 시연 화면입니다.
         </p>
       </div>
-      <div class="demo-badge">데모</div>
+      <div class="demo">데모</div>
     </div>
 
-    <div class="hero-note">
-      <span class="chip blue">상품종류 선택</span>
-      <span class="chip green">문의내용 입력</span>
-      <span class="chip orange">답변제공</span>
-      <span class="chip">매뉴얼 / 시스템 바로가기</span>
+    <div class="meta-row">
+      <div class="field">
+        <label for="endpoint">Endpoint URL</label>
+        <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
+      </div>
+      <div class="field">
+        <label for="apikey">Supabase Key</label>
+        <input id="apikey" type="password" placeholder="anon or publishable key">
+      </div>
     </div>
 
     <div class="layout">
       <section class="top-grid">
-        <article class="card product-panel" id="productCard">
+        <article class="card">
           <div class="card-head">
             <h2>상품종류 선택</h2>
-            <span class="tag">product_group</span>
+            <span class="badge">product_group</span>
           </div>
           <div class="card-body">
-            <div class="search-row">
+            <div class="row">
               <div class="field">
                 <label for="productSearch">상품명 검색</label>
-                <input id="productSearch" placeholder="예: 유병자, 실손, 변액저축, 암..." autocomplete="off">
+                <input id="productSearch" placeholder="예: 실손, 변액연금, 유병자, 암...">
               </div>
               <div class="field">
-                <label for="productInput">현재 선택</label>
-                <input id="productInput" placeholder="상품명을 고르거나 검색해 주세요">
+                <label for="productInput">직접입력란</label>
+                <input id="productInput" placeholder="상품명을 직접 입력해도 됩니다">
               </div>
             </div>
 
-            <div class="button-row">
-              <button class="btn primary small" id="applyFirst">첫 번째 결과 적용</button>
-              <button class="btn soft small" id="clearProduct">상품 선택 해제</button>
-              <button class="btn green small" id="syncQuestion">선택 상품으로 문의에 반영</button>
-            </div>
-
-            <div class="selected-block">
+            <div class="selected">
               <span class="label">선택된 상품군</span>
-              <span class="selected-pill" id="selectedProductPill">미선택</span>
-              <span class="tiny">상품명에 보험/상품이 붙어도 자동 보정됩니다.</span>
+              <span class="pill" id="selectedProduct">미선택</span>
             </div>
 
-            <div class="product-grid" id="productGrid" aria-label="상품군 목록"></div>
+            <div class="product-preview" id="productPreview">
+              대표 상품: -
+            </div>
+
+            <div class="product-list">
+              <div class="product-main" id="mainProduct"></div>
+              <details class="more">
+                <summary>상품 더보기</summary>
+                <div class="more-grid" id="moreProducts"></div>
+              </details>
+            </div>
+
             <div class="hint">
-              1) 왼쪽 검색창에 상품명을 입력하면 후보가 필터링됩니다.
-              2) 아래 목록에서 직접 선택할 수도 있습니다.
+              기본은 첫 번째 추천 상품만 보여주고, 나머지는 필요할 때만 펼쳐서 고를 수 있습니다.
             </div>
           </div>
         </article>
 
-        <article class="card" id="questionCard">
+        <article class="card">
           <div class="card-head">
             <h2>문의내용</h2>
-            <span class="tag">inquiry</span>
+            <span class="badge">inquiry</span>
           </div>
           <div class="card-body">
             <div class="field">
               <label for="question">사용자 문의</label>
-              <textarea id="question" placeholder="예: 보험료가 왜 올라요? / 보장내용 확인 / 가입금액 변경 ..."></textarea>
+              <textarea id="question" placeholder="예: 연금 개시연령 변경"></textarea>
             </div>
-
-            <div class="button-row">
+            <div class="hint">상품군과 문의내용을 함께 보내면 답변 정확도가 높아집니다.</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn primary" id="run">답변 생성</button>
-              <button class="btn soft" id="fillScenario">예시 입력</button>
-              <button class="btn blue" id="clearQuestion">초기화</button>
-            </div>
-
-            <div class="field" style="margin-top: 12px;">
-              <label for="apikey">Supabase Key</label>
-              <input id="apikey" type="password" placeholder="anon or publishable key">
-            </div>
-
-            <div class="hint">
-              문의내용은 선택된 상품군과 함께 전송되어 라우터와 유사문 검색에 사용됩니다.
-            </div>
-
-            <div class="preview-box" id="requestPreview">
-              <strong>전송 미리보기</strong><br>
-              상품군: -<br>
-              문의내용: -<br>
-              전송 문장: -
+              <button class="btn soft" id="clear">초기화</button>
             </div>
           </div>
         </article>
       </section>
 
       <section class="bottom-grid">
-        <article class="card summary-card" id="answerCard">
+        <article class="card answer-card">
           <div class="card-head">
             <h2>답변제공</h2>
-            <span class="tag" id="runState">대기 중</span>
+            <span class="badge" id="runState">대기 중</span>
           </div>
           <div class="card-body">
-            <div class="status-row">
-              <div class="status-box">
+            <div class="summary">
+              <div class="box">
                 <span class="label">Router</span>
                 <div class="value" id="routerValue">-</div>
               </div>
-              <div class="status-box">
+              <div class="box">
                 <span class="label">Search</span>
                 <div class="value" id="searchValue">-</div>
               </div>
-              <div class="status-box">
+              <div class="box">
                 <span class="label">Draft</span>
                 <div class="value" id="draftValue">-</div>
+              </div>
+              <div class="box">
+                <span class="label">Status</span>
+                <div class="value" id="statusValue">-</div>
               </div>
             </div>
 
@@ -556,86 +480,51 @@
               </div>
             </div>
 
-            <details class="raw-box">
+            <details class="raw">
               <summary>Raw JSON 보기</summary>
               <pre id="rawJson">아직 실행 전입니다.</pre>
             </details>
-          </div>
-        </article>
 
-        <article class="footer-note">
-          <strong>※ 상기 답변은 참고용 예시이며, 실제 최종 안내는 상품별 약관 및 내부 매뉴얼을 확인한 뒤 사용하시기 바랍니다.</strong>
-          <br>
-          상품명과 문의내용이 명확할수록 더 정확한 결과가 나옵니다. 상품명이 없는 경우에는 담당자 확인이 필요할 수 있습니다.
+            <div class="note-box">
+              ※ 상기 답변은 참고용 예시이며, 실제 최종 안내는 상품별 약관 및 내부 매뉴얼을 확인한 뒤 사용하시기 바랍니다.
+            </div>
+          </div>
         </article>
       </section>
     </div>
   </div>
 
   <script>
-    const endpointUrl = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
-    const STORAGE_KEYS = {
-      endpoint: 'manual-voc-endpoint',
-      apikey: 'manual-voc-apikey',
-      selectedProduct: 'manual-voc-selected-product',
-    };
-
+    const ENDPOINT = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
+    const STORAGE_KEY = 'manual-voc-apikey';
     const PRODUCT_GROUPS = [
-      '실손보험',
-      '건강보험',
-      '암보험',
-      '정기보험',
-      '종신보험',
-      '간편보험',
-      '유병자보험',
-      '변액저축보험',
-      '변액유니버설',
-      '변액연금',
-      '연금저축',
-      '일반연금',
-      '즉시연금',
-      '종합보험',
-      '어린이보험',
-      '치아보험',
-      '치매보험',
-      '간병보험',
-      '재해보험',
-      '상해보험',
-      '운전자보험',
-      '저축보험',
-      'CI보험',
-      '교육보험',
-      '소득보장보험',
-      '여성보험',
-      '갱신형건강보험',
-      '공시이율종신보험',
-      '종신연금보험',
-      '간편보험',
+      '실손보험', '건강보험', '암보험', '정기보험', '종신보험', '간편보험', '유병자보험',
+      '변액저축보험', '변액유니버설', '변액연금', '연금저축', '일반연금', '즉시연금', '종합보험',
+      '어린이보험', '치아보험', '치매보험', '간병보험', '재해보험', '상해보험', '운전자보험',
+      '저축보험', 'CI보험', '교육보험', '소득보장보험', '여성보험', '갱신형건강보험', '공시이율종신보험',
+      '종신연금보험', '간편보험',
     ];
 
-    const productInput = document.getElementById('productInput');
-    const productSearch = document.getElementById('productSearch');
-    const apikeyInput = document.getElementById('apikey');
-    const productGrid = document.getElementById('productGrid');
-    const selectedProductPill = document.getElementById('selectedProductPill');
+    const endpointEl = document.getElementById('endpoint');
+    const apikeyEl = document.getElementById('apikey');
+    const productSearchEl = document.getElementById('productSearch');
+    const productInputEl = document.getElementById('productInput');
     const questionEl = document.getElementById('question');
+    const selectedProductEl = document.getElementById('selectedProduct');
+    const productPreviewEl = document.getElementById('productPreview');
+    const mainProductEl = document.getElementById('mainProduct');
+    const moreProductsEl = document.getElementById('moreProducts');
     const runStateEl = document.getElementById('runState');
     const routerValueEl = document.getElementById('routerValue');
     const searchValueEl = document.getElementById('searchValue');
     const draftValueEl = document.getElementById('draftValue');
+    const statusValueEl = document.getElementById('statusValue');
     const answerTextEl = document.getElementById('answerText');
     const manualValueEl = document.getElementById('manualValue');
     const systemValueEl = document.getElementById('systemValue');
     const rawJsonEl = document.getElementById('rawJson');
-    const requestPreviewEl = document.getElementById('requestPreview');
 
-    let selectedProduct = localStorage.getItem(STORAGE_KEYS.selectedProduct) || '';
-    let lastJson = '';
-
-    apikeyInput.value = localStorage.getItem(STORAGE_KEYS.apikey) || '';
-    apikeyInput.addEventListener('input', () => {
-      localStorage.setItem(STORAGE_KEYS.apikey, apikeyInput.value);
-    });
+    let selectedProduct = localStorage.getItem('manual-voc-selected-product') || '';
 
     function escapeHtml(value) {
       return String(value)
@@ -646,57 +535,53 @@
         .replaceAll("'", '&#39;');
     }
 
-    function normalizeText(value) {
-      return value.toLowerCase().replace(/\s+/g, '').replace(/[^0-9a-z가-힣]/g, '');
+    function normalize(value) {
+      return String(value).toLowerCase().replace(/\s+/g, '').replace(/[^0-9a-z가-힣]/g, '');
     }
 
-    function renderSelectedProduct() {
-      selectedProductPill.textContent = selectedProduct || '미선택';
-      productInput.value = selectedProduct;
-      localStorage.setItem(STORAGE_KEYS.selectedProduct, selectedProduct);
+    function buildText() {
+      return [productInputEl.value.trim(), questionEl.value.trim()].filter(Boolean).join(' ').trim();
+    }
+
+    function setSelectedProduct(value) {
+      selectedProduct = value || '';
+      productInputEl.value = selectedProduct;
+      selectedProductEl.textContent = selectedProduct || '미선택';
+      localStorage.setItem('manual-voc-selected-product', selectedProduct);
       renderProducts();
       renderPreview();
     }
 
+    function renderPreview() {
+      const product = selectedProduct || productInputEl.value.trim() || '-';
+      const question = questionEl.value.trim() || '-';
+      const request = buildText() || '-';
+      productPreviewEl.innerHTML = `
+        대표 상품: ${escapeHtml(product)}<br>
+        문의내용: ${escapeHtml(question)}<br>
+        전송 문장: ${escapeHtml(request)}
+      `;
+    }
+
     function renderProducts() {
-      const query = normalizeText(productSearch.value || '');
-      const items = PRODUCT_GROUPS.filter((group) => normalizeText(group).includes(query));
+      const q = normalize(productSearchEl.value);
+      const filtered = PRODUCT_GROUPS.filter((group) => normalize(group).includes(q));
+      const first = filtered[0] || '';
+      const rest = filtered.slice(1);
 
-      productGrid.innerHTML = items.map((group) => {
-        const active = group === selectedProduct ? 'active' : '';
-        return `
-          <button type="button" class="product-item ${active}" data-product="${escapeHtml(group)}">
-            <span>${escapeHtml(group)}</span>
-            <span class="meta">선택</span>
-          </button>
-        `;
-      }).join('') || '<div class="tiny">검색 결과가 없습니다. 다른 상품명으로 다시 입력해 주세요.</div>';
+      mainProductEl.innerHTML = first
+        ? `<button type="button" class="product-item ${first === selectedProduct ? 'active' : ''}" data-product="${escapeHtml(first)}">대표 상품: ${escapeHtml(first)}</button>`
+        : '<div class="hint">검색 결과가 없습니다.</div>';
 
-      productGrid.querySelectorAll('.product-item').forEach((button) => {
+      moreProductsEl.innerHTML = rest.length
+        ? rest.map((group) => `<button type="button" class="product-item ${group === selectedProduct ? 'active' : ''}" data-product="${escapeHtml(group)}">${escapeHtml(group)}</button>`).join('')
+        : '<div class="hint">추가 상품이 없습니다.</div>';
+
+      document.querySelectorAll('.product-item[data-product]').forEach((button) => {
         button.addEventListener('click', () => {
-          selectedProduct = button.dataset.product || '';
-          renderSelectedProduct();
+          setSelectedProduct(button.dataset.product || '');
         });
       });
-    }
-
-    function buildRequestText() {
-      const question = questionEl.value.trim();
-      const product = productInput.value.trim();
-      return [product, question].filter(Boolean).join(' ').trim();
-    }
-
-    function renderPreview() {
-      const product = selectedProduct || productInput.value.trim() || '-';
-      const question = questionEl.value.trim() || '-';
-      const requestText = buildRequestText() || '-';
-
-      requestPreviewEl.innerHTML = `
-        <strong>전송 미리보기</strong><br>
-        상품군: ${escapeHtml(product)}<br>
-        문의내용: ${escapeHtml(question)}<br>
-        전송 문장: ${escapeHtml(requestText)}
-      `;
     }
 
     function resetResult() {
@@ -704,96 +589,41 @@
       routerValueEl.textContent = '-';
       searchValueEl.textContent = '-';
       draftValueEl.textContent = '-';
+      statusValueEl.textContent = '-';
       answerTextEl.textContent = '여기에 답변이 표시됩니다.';
       manualValueEl.textContent = '-';
       systemValueEl.textContent = '-';
       rawJsonEl.textContent = '아직 실행 전입니다.';
-      lastJson = '';
-      renderPreview();
     }
 
     function renderResponse(data) {
       const row = data?.search?.matched_rows?.[0] || null;
-      const routerReason = data?.router?.reason || '-';
-      const searchReason = data?.search?.reason || '-';
-      const answer = data?.draft?.draft_answer || row?.standard_answer || data?.router?.response || `표시할 답변이 없습니다.\n\n라우터: ${routerReason}\n검색: ${searchReason}`;
-      const manualText = row
-        ? [row.reference_doc_name, row.reference_file_path].filter(Boolean).join('\n')
-        : '';
-      const systemText = row
-        ? [row.system_name, row.screen_path].filter(Boolean).join('\n')
-        : '';
+      const answer = data?.draft?.draft_answer || row?.standard_answer || data?.router?.response || '표시할 답변이 없습니다.';
+      const manualText = row ? [row.reference_doc_name, row.reference_file_path].filter(Boolean).join('\n') : '-';
+      const systemText = row ? [row.system_name, row.screen_path].filter(Boolean).join('\n') : '-';
 
       routerValueEl.textContent = data?.router?.label || '-';
       searchValueEl.textContent = data?.search?.match_status || '-';
       draftValueEl.textContent = data?.draft?.status || '-';
+      statusValueEl.textContent = data?.draft?.status === 'draftable' ? 'READY' : 'CHECK';
       answerTextEl.textContent = answer;
-      manualValueEl.textContent = manualText || '-';
-      systemValueEl.textContent = systemText || '-';
+      manualValueEl.textContent = manualText;
+      systemValueEl.textContent = systemText;
       rawJsonEl.textContent = JSON.stringify(data, null, 2);
-      lastJson = rawJsonEl.textContent;
       runStateEl.textContent = '완료';
-      renderPreview();
     }
 
-    function syncQuestionWithProduct() {
-      const question = questionEl.value.trim();
-      if (!selectedProduct) return;
-      if (question && !question.includes(selectedProduct)) {
-        questionEl.value = `${selectedProduct} ${question}`;
+    async function run() {
+      const apikey = apikeyEl.value.trim() || localStorage.getItem(STORAGE_KEY) || '';
+      const text = buildText();
+      if (!apikey) {
+        runStateEl.textContent = 'Key 필요';
+        answerTextEl.textContent = 'Supabase Key를 입력해 주세요.';
+        return;
       }
-    }
-
-    document.getElementById('applyFirst').addEventListener('click', () => {
-      const first = productGrid.querySelector('.product-item');
-      if (first) {
-        selectedProduct = first.dataset.product || '';
-        renderSelectedProduct();
-      }
-    });
-
-    document.getElementById('clearProduct').addEventListener('click', () => {
-      selectedProduct = '';
-      renderSelectedProduct();
-    });
-
-    document.getElementById('syncQuestion').addEventListener('click', syncQuestionWithProduct);
-    document.getElementById('fillScenario').addEventListener('click', () => {
-      questionEl.value = '실손보험료가 왜 올라요?';
-    });
-    document.getElementById('clearQuestion').addEventListener('click', () => {
-      questionEl.value = '';
-      resetResult();
-    });
-
-    productSearch.addEventListener('input', () => {
-      renderProducts();
-      renderPreview();
-      const exact = PRODUCT_GROUPS.find((group) => normalizeText(group) === normalizeText(productSearch.value));
-      if (exact) {
-        selectedProduct = exact;
-        renderSelectedProduct();
-      }
-    });
-    productInput.addEventListener('input', () => {
-      selectedProduct = productInput.value.trim();
-      localStorage.setItem(STORAGE_KEYS.selectedProduct, selectedProduct);
-      renderProducts();
-      renderPreview();
-    });
-    questionEl.addEventListener('input', renderPreview);
-
-    async function runTest() {
-      const apikey = apikeyInput.value.trim() || localStorage.getItem(STORAGE_KEYS.apikey) || '';
-      const text = buildRequestText();
       if (!text) {
         runStateEl.textContent = '입력 필요';
         answerTextEl.textContent = '상품종류와 문의내용을 입력해 주세요.';
-        return;
-      }
-      if (!apikey) {
-        runStateEl.textContent = 'Key 필요';
-        answerTextEl.textContent = 'Supabase Key를 먼저 입력해 주세요.';
         return;
       }
 
@@ -802,7 +632,7 @@
       rawJsonEl.textContent = '실행 중...';
 
       try {
-        const res = await fetch(endpointUrl, {
+        const res = await fetch(ENDPOINT, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
@@ -821,19 +651,31 @@
       }
     }
 
-    document.getElementById('run').addEventListener('click', runTest);
-    document.querySelector('.brand').addEventListener('click', () => {
-      document.querySelector('.layout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    endpointEl.value = ENDPOINT;
+    apikeyEl.value = localStorage.getItem(STORAGE_KEY) || '';
+    apikeyEl.addEventListener('input', () => localStorage.setItem(STORAGE_KEY, apikeyEl.value));
+    productSearchEl.addEventListener('input', () => {
+      const normalized = normalize(productSearchEl.value);
+      const exact = PRODUCT_GROUPS.find((group) => normalize(group) === normalized);
+      renderProducts();
+      renderPreview();
+      if (exact) setSelectedProduct(exact);
+    });
+    productInputEl.addEventListener('input', () => {
+      setSelectedProduct(productInputEl.value.trim());
+    });
+    questionEl.addEventListener('input', renderPreview);
+    document.getElementById('run').addEventListener('click', run);
+    document.getElementById('clear').addEventListener('click', () => {
+      productSearchEl.value = '';
+      questionEl.value = '';
+      setSelectedProduct('');
+      renderProducts();
+      renderPreview();
+      resetResult();
     });
 
-    window.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.key === 'Enter') {
-        runTest();
-      }
-    });
-
-    productSearch.value = '';
-    renderSelectedProduct();
+    setSelectedProduct(selectedProduct);
     renderProducts();
     renderPreview();
     resetResult();

@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>상품 VOC 검증 에이전트</title>
+  <style>
+    :root {
+      --bg: #f9f4de;
+      --panel: #fffaf0;
+      --ink: #1a1a1a;
+      --muted: #6d6658;
+      --line: #1d1d1d;
+      --accent: #ffe56d;
+      --accent-2: #a8efbf;
+      --accent-3: #d7efff;
+      --fail: #ffb3b3;
+      --pass: #b9f0ca;
+      --shadow: 0 8px 0 rgba(29, 29, 29, 1);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 8%, rgba(255, 242, 155, 0.92), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(255, 210, 225, 0.84), transparent 28%),
+        linear-gradient(180deg, #fff7dd 0%, #f7f0e1 100%);
+    }
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 18px 42px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 18px;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: var(--shadow);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      font-size: 18px;
+    }
+    .demo {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 18px;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      background: var(--accent-2);
+      box-shadow: var(--shadow);
+      font-weight: 900;
+    }
+    .subtitle {
+      margin: 12px 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.65;
+      max-width: 1040px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn {
+      appearance: none;
+      border: 4px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: #fffdf6;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+      color: var(--ink);
+    }
+    .btn.primary { background: var(--accent); }
+    .btn.soft { background: var(--accent-3); }
+    .btn.green { background: var(--accent-2); }
+    .layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 16px;
+    }
+    .card {
+      border: 4px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 18px 0;
+      flex-wrap: wrap;
+    }
+    .card-head h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border: 3px solid var(--line);
+      border-radius: 999px;
+      background: #f5efd9;
+      box-shadow: 0 5px 0 rgba(29, 29, 29, 1);
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .card-body { padding: 16px 18px 18px; }
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      padding: 13px 14px;
+      background: #fffef8;
+      color: var(--ink);
+      font: inherit;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+      outline: none;
+    }
+    .field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #878175; }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+      max-height: 260px;
+      overflow: auto;
+    }
+    .product-item {
+      border: 3px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf5;
+      box-shadow: 0 5px 0 rgba(29, 29, 29, 1);
+      padding: 11px 12px;
+      cursor: pointer;
+      font-weight: 800;
+      min-height: 48px;
+      text-align: left;
+    }
+    .product-item.active { background: #ffe88b; }
+    .preview {
+      margin-top: 12px;
+      border: 3px dashed rgba(29, 29, 29, 0.35);
+      border-radius: 18px;
+      background: #fffaf1;
+      padding: 12px 14px;
+      line-height: 1.7;
+      font-size: 13px;
+      font-weight: 700;
+      color: #2d281f;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .box {
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf6;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+      padding: 12px 14px;
+    }
+    .box .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .box .value {
+      font-size: 18px;
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .results {
+      display: grid;
+      gap: 12px;
+    }
+    .result-card {
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf6;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+      padding: 14px 16px;
+    }
+    .result-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+    .result-card pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fffdf6;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(29,29,29,0.12);
+      vertical-align: top;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    th {
+      background: #f9f2cc;
+      font-weight: 900;
+    }
+    tr.pass td.status { color: #0b6b2e; font-weight: 900; }
+    tr.fail td.status { color: #b10000; font-weight: 900; }
+    .fine {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 700;
+    }
+    .note {
+      margin-top: 14px;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      background: #f4ecd7;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+    .raw {
+      margin-top: 12px;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      background: #fffdf6;
+      box-shadow: 0 6px 0 rgba(29, 29, 29, 1);
+      padding: 14px 16px;
+    }
+    .raw summary {
+      cursor: pointer;
+      font-weight: 900;
+      list-style: none;
+    }
+    .raw summary::-webkit-details-marker { display: none; }
+    .raw pre {
+      margin: 10px 0 0;
+      max-height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+    }
+    @media (max-width: 1100px) {
+      .layout,
+      .summary,
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="brand">상품 VOC 검증 에이전트</div>
+        <div class="subtitle">
+          시나리오 팩을 자동으로 돌려서 라우터, 검색, 초안, 매뉴얼/시스템 표시까지 한 번에 검증합니다.
+          사용자가 직접 일일이 클릭하지 않아도 되도록 만든 별도 검증용 에이전트입니다.
+        </div>
+      </div>
+      <div class="demo">데모</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary" id="runAll">시나리오 전체 검증</button>
+      <button class="btn soft" id="runSelected">선택 시나리오만</button>
+      <button class="btn green" id="reset">결과 초기화</button>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <div class="card-head">
+          <h2>검증 입력</h2>
+          <span class="tag">상품종류 / 문의내용</span>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="endpoint">Endpoint URL</label>
+            <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
+          </div>
+          <div class="field">
+            <label for="apikey">Supabase Key</label>
+            <input id="apikey" type="password" placeholder="anon or publishable key">
+          </div>
+          <div class="field">
+            <label for="scenarioSelect">시나리오 선택</label>
+            <select id="scenarioSelect"></select>
+          </div>
+          <div class="field">
+            <label for="productSearch">상품명 검색</label>
+            <input id="productSearch" placeholder="예: 변액연금, 유병자, 실손, 암...">
+          </div>
+          <div class="field">
+            <label for="productInput">현재 선택</label>
+            <input id="productInput" placeholder="상품명을 직접 입력하거나 목록에서 선택">
+          </div>
+          <div class="field">
+            <label for="question">문의내용</label>
+            <textarea id="question" placeholder="예: 연금 개시연령 변경"></textarea>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+          <div class="preview" id="previewBox"></div>
+          <div class="fine">
+            상품명이 정확해야 `product_group`이 잡히고, 그 다음에 `inquiry_type`과 `standard_answer`가 따라옵니다.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>검증 결과</h2>
+          <span class="tag" id="runState">대기 중</span>
+        </div>
+        <div class="card-body">
+          <div class="summary">
+            <div class="box">
+              <span class="label">Router</span>
+              <div class="value" id="routerValue">-</div>
+            </div>
+            <div class="box">
+              <span class="label">Search</span>
+              <div class="value" id="searchValue">-</div>
+            </div>
+            <div class="box">
+              <span class="label">Draft</span>
+              <div class="value" id="draftValue">-</div>
+            </div>
+            <div class="box">
+              <span class="label">Status</span>
+              <div class="value" id="statusValue">-</div>
+            </div>
+          </div>
+
+          <div class="results">
+            <div class="result-card">
+              <h3>판정 요약</h3>
+              <pre id="summaryText">아직 실행 전입니다.</pre>
+            </div>
+            <div class="result-card">
+              <h3>답변 / 근거</h3>
+              <pre id="detailText">아직 실행 전입니다.</pre>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>시나리오</th>
+                  <th>기대</th>
+                  <th>실제</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr>
+                  <td colspan="4">아직 실행 전입니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <details class="raw">
+            <summary>Raw JSON 보기</summary>
+            <pre id="rawJson">아직 실행 전입니다.</pre>
+          </details>
+
+          <div class="note">
+            ※ 이 검증 에이전트는 Vercel 배포 전에, 라우터 분기와 답변 생성이 기대대로 동작하는지 확인하기 위한 내부 검증용입니다.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINT = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
+    const STORAGE = {
+      key: 'manual-voc-apikey',
+    };
+
+    const SCENARIOS = [
+      {
+        id: '1',
+        input: '안녕하세요',
+        product: '',
+        expect: { router: 'casual_chat', search: null, draft: null },
+      },
+      {
+        id: '2',
+        input: '실손보험료가 왜 올라요?',
+        product: '실손보험',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '실손보험 보험료는 손해율' },
+      },
+      {
+        id: '3',
+        input: '변액연금 연금개시연령 변경 가능한가요?',
+        product: '변액연금',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '시스템 (계약사항조회 > 연금액 조회)' },
+      },
+      {
+        id: '4',
+        input: '종신보험 납입기간 변경하고 싶어요',
+        product: '종신보험',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '계약사항조회 (계약사항조회 > 납입정보 조회)' },
+      },
+      {
+        id: '5',
+        input: '간병보험 보험금 청구방법 알려주세요',
+        product: '간병보험',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '보험금청구시스템 (보험금청구시스템 > 청구서류 안내)' },
+      },
+      {
+        id: '6',
+        input: '변액유니버설 펀드변경 가능해요?',
+        product: '변액유니버설',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '펀드관리시스템 (펀드관리시스템 > 펀드변경)' },
+      },
+      {
+        id: '7',
+        input: '보험료를 알려줘',
+        product: '',
+        expect: { router: 'human_handoff', search: null, draft: null },
+      },
+      {
+        id: '8',
+        input: '이 문의는 어느 부서가 봐야 하나요?',
+        product: '',
+        expect: { router: 'needs_clarification', search: null, draft: null },
+      },
+      {
+        id: '9',
+        input: '종합보험 종합보장 확인',
+        product: '종합보험',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '종합보험의 보장내용은 가입하신 담보와 특약 구성에 따라 달라집니다.' },
+      },
+      {
+        id: '10',
+        input: '유병자보험 가입가능 여부 알려줘',
+        product: '유병자보험',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '유병자보험의 가입가능 여부는 상품별 가입조건에 따라 달라집니다.' },
+      },
+      {
+        id: '11',
+        input: '변액연금 연금 개시연령 변경',
+        product: '변액연금',
+        expect: { router: 'customer_inquiry', search: 'exact', draftSnippet: '변액연금_연금개시연령변경_연금액조회매뉴얼' },
+      },
+    ];
+
+    const productGroups = [
+      '실손보험', '건강보험', '암보험', '정기보험', '종신보험', '간편보험', '유병자보험',
+      '변액저축보험', '변액유니버설', '변액연금', '연금저축', '일반연금', '즉시연금', '종합보험',
+      '어린이보험', '치아보험', '치매보험', '간병보험', '재해보험', '상해보험', '운전자보험',
+      '저축보험', 'CI보험', '교육보험', '소득보장보험', '여성보험', '갱신형건강보험', '공시이율종신보험',
+      '종신연금보험', '간편보험',
+    ];
+
+    const el = (id) => document.getElementById(id);
+    const endpointEl = el('endpoint');
+    const apikeyEl = el('apikey');
+    const scenarioSelect = el('scenarioSelect');
+    const productSearchEl = el('productSearch');
+    const productInputEl = el('productInput');
+    const questionEl = el('question');
+    const productGrid = el('productGrid');
+    const previewBox = el('previewBox');
+    const runStateEl = el('runState');
+    const routerValueEl = el('routerValue');
+    const searchValueEl = el('searchValue');
+    const draftValueEl = el('draftValue');
+    const statusValueEl = el('statusValue');
+    const summaryText = el('summaryText');
+    const detailText = el('detailText');
+    const rawJson = el('rawJson');
+    const tableBody = el('tableBody');
+    let selectedProduct = '';
+    let lastResponseByScenario = new Map();
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function normalize(value) {
+      return String(value).toLowerCase().replace(/\s+/g, '').replace(/[^0-9a-z가-힣]/g, '');
+    }
+
+    function buildText() {
+      return [productInputEl.value.trim(), questionEl.value.trim()].filter(Boolean).join(' ').trim();
+    }
+
+    function preview() {
+      previewBox.innerHTML = `
+        <strong>전송 미리보기</strong><br>
+        상품군: ${escapeHtml(productInputEl.value.trim() || selectedProduct || '-')}<br>
+        문의내용: ${escapeHtml(questionEl.value.trim() || '-')}<br>
+        전송 문장: ${escapeHtml(buildText() || '-')}
+      `;
+    }
+
+    function renderProducts() {
+      const q = normalize(productSearchEl.value);
+      const filtered = productGroups.filter((group) => normalize(group).includes(q));
+      productGrid.innerHTML = filtered.map((group) => `
+        <button type="button" class="product-item ${group === selectedProduct ? 'active' : ''}" data-product="${escapeHtml(group)}">
+          ${escapeHtml(group)}
+        </button>
+      `).join('') || '<div class="fine">검색 결과가 없습니다.</div>';
+      productGrid.querySelectorAll('.product-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedProduct = btn.dataset.product || '';
+          productInputEl.value = selectedProduct;
+          preview();
+          renderProducts();
+        });
+      });
+    }
+
+    function setScenario(scenario) {
+      productInputEl.value = scenario.product || '';
+      questionEl.value = scenario.input;
+      selectedProduct = scenario.product || '';
+      renderProducts();
+      preview();
+    }
+
+    function score(actual, expected) {
+      if (!expected) return actual ? 'FAIL' : 'PASS';
+      if (!actual) return 'FAIL';
+      return String(actual).includes(expected) ? 'PASS' : 'FAIL';
+    }
+
+    function renderTable(rows) {
+      tableBody.innerHTML = rows.map((row) => `
+        <tr class="${row.pass ? 'pass' : 'fail'}">
+          <td>${escapeHtml(row.scenario)}</td>
+          <td>${escapeHtml(row.expected)}</td>
+          <td>${escapeHtml(row.actual)}</td>
+          <td class="status">${row.pass ? 'PASS' : 'FAIL'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function summarizeScenario(scenario, data) {
+      const actualRouter = data?.router?.label || '-';
+      const actualSearch = data?.search?.match_status || '-';
+      const actualDraft = data?.draft?.status || '-';
+      const actualText = data?.draft?.draft_answer || data?.router?.response || '-';
+      const manual = data?.search?.matched_rows?.[0]?.reference_doc_name || '-';
+      const system = data?.search?.matched_rows?.[0]?.screen_path || '-';
+      const passRouter = score(actualRouter, scenario.expect.router) === 'PASS';
+      const passSearch = scenario.expect.search ? score(actualSearch, scenario.expect.search) === 'PASS' : actualSearch === '-';
+      const passDraft = scenario.expect.draftSnippet ? String(actualText).includes(scenario.expect.draftSnippet) : actualDraft === '-' || actualDraft === 'answer_unavailable' || actualDraft === 'draftable';
+
+      return {
+        scenario: `${scenario.id}. ${scenario.input}`,
+        rows: [
+          { scenario: 'Router', expected: scenario.expect.router || '-', actual: actualRouter, pass: passRouter },
+          { scenario: 'Search', expected: scenario.expect.search || '-', actual: actualSearch, pass: passSearch },
+          { scenario: 'Draft', expected: scenario.expect.draftSnippet || '-', actual: actualText, pass: passDraft },
+        ],
+        text: [
+          `입력: ${scenario.input}`,
+          `선택 상품: ${scenario.product || '-'}`,
+          `실제 router: ${actualRouter}`,
+          `실제 search: ${actualSearch}`,
+          `실제 draft: ${actualDraft}`,
+          `답변: ${actualText}`,
+          `매뉴얼: ${manual}`,
+          `시스템: ${system}`,
+        ].join('\n'),
+      };
+    }
+
+    async function callFlow(text) {
+      const key = apikeyEl.value.trim() || localStorage.getItem(STORAGE.key) || '';
+      if (!key) throw new Error('Supabase Key를 입력해 주세요.');
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${key}`,
+          apikey: key,
+        },
+        body: JSON.stringify({ text }),
+      });
+      return res.json();
+    }
+
+    async function runOne(scenario) {
+      setScenario(scenario);
+      runStateEl.textContent = `실행 중 ${scenario.id}`;
+      const data = await callFlow(buildText());
+      lastResponseByScenario.set(scenario.id, data);
+      const result = summarizeScenario(scenario, data);
+      routerValueEl.textContent = data?.router?.label || '-';
+      searchValueEl.textContent = data?.search?.match_status || '-';
+      draftValueEl.textContent = data?.draft?.status || '-';
+      statusValueEl.textContent = result.rows.every((r) => r.pass) ? 'PASS' : 'FAIL';
+      summaryText.textContent = result.text;
+      detailText.textContent = JSON.stringify(data, null, 2);
+      rawJson.textContent = JSON.stringify(data, null, 2);
+      return { ...result, pass: result.rows.every((r) => r.pass) };
+    }
+
+    async function runAll() {
+      const rows = [];
+      runStateEl.textContent = '전체 검증 중';
+      for (const scenario of SCENARIOS) {
+        try {
+          const result = await runOne(scenario);
+          rows.push({ scenario: scenario.id, expected: `${scenario.expect.router}${scenario.expect.search ? ` / ${scenario.expect.search}` : ''}`, actual: `router ${lastResponseByScenario.get(scenario.id)?.router?.label || '-'}`, pass: result.pass });
+        } catch (error) {
+          rows.push({ scenario: scenario.id, expected: scenario.expect.router, actual: error.message, pass: false });
+        }
+        renderTable(rows);
+      }
+      runStateEl.textContent = '완료';
+    }
+
+    async function runSelected() {
+      const scenario = SCENARIOS.find((item) => item.id === scenarioSelect.value) || SCENARIOS[0];
+      try {
+        const result = await runOne(scenario);
+        renderTable([{ scenario: scenario.id, expected: `${scenario.expect.router}${scenario.expect.search ? ` / ${scenario.expect.search}` : ''}`, actual: result.rows.map((r) => `${r.scenario}: ${r.actual}`).join(' | '), pass: result.pass }]);
+      } catch (error) {
+        renderTable([{ scenario: scenario.id, expected: scenario.expect.router, actual: error.message, pass: false }]);
+        runStateEl.textContent = '오류';
+      }
+    }
+
+    function reset() {
+      summaryText.textContent = '아직 실행 전입니다.';
+      detailText.textContent = '아직 실행 전입니다.';
+      rawJson.textContent = '아직 실행 전입니다.';
+      routerValueEl.textContent = '-';
+      searchValueEl.textContent = '-';
+      draftValueEl.textContent = '-';
+      statusValueEl.textContent = '-';
+      runStateEl.textContent = '대기 중';
+      renderTable([{ scenario: '대기', expected: '-', actual: '-', pass: true }]);
+      lastResponseByScenario.clear();
+    }
+
+    function initScenarioSelect() {
+      scenarioSelect.innerHTML = SCENARIOS.map((scenario) => `
+        <option value="${scenario.id}">${scenario.id}. ${escapeHtml(scenario.input)}</option>
+      `).join('');
+      scenarioSelect.value = SCENARIOS[0].id;
+    }
+
+    productSearchEl.addEventListener('input', () => {
+      const normalized = normalize(productSearchEl.value);
+      const exact = productGroups.find((group) => normalize(group) === normalized);
+      renderProducts();
+      preview();
+      if (exact) {
+        selectedProduct = exact;
+        productInputEl.value = exact;
+        renderProducts();
+        preview();
+      }
+    });
+    productInputEl.addEventListener('input', () => {
+      selectedProduct = productInputEl.value.trim();
+      renderProducts();
+      preview();
+    });
+    questionEl.addEventListener('input', preview);
+    apikeyEl.value = localStorage.getItem(STORAGE.key) || '';
+    apikeyEl.addEventListener('input', () => localStorage.setItem(STORAGE.key, apikeyEl.value));
+
+    document.getElementById('runAll').addEventListener('click', runAll);
+    document.getElementById('runSelected').addEventListener('click', runSelected);
+    document.getElementById('reset').addEventListener('click', reset);
+    scenarioSelect.addEventListener('change', () => setScenario(SCENARIOS.find((s) => s.id === scenarioSelect.value) || SCENARIOS[0]));
+
+    initScenarioSelect();
+    setScenario(SCENARIOS[0]);
+    renderProducts();
+    preview();
+    reset();
+  </script>
+</body>
+</html>

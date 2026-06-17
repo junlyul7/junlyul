@@ -126,12 +126,7 @@
 <body>
   <div class="wrap">
     <div class="title">삼성생명 상품문의 응대 지원봇</div>
-    <p class="desc">이 페이지는 캐시 영향을 줄이기 위한 새 확인용 화면입니다. 새 탭으로 열거나, 이 페이지에서 바로 테스트할 수 있습니다.</p>
-
-    <div class="row" style="margin-bottom:16px;">
-      <a class="button primary" href="./manual-voc-simple.html?ts=1" target="_blank" rel="noreferrer">simple 새 탭 열기</a>
-      <a class="button secondary" id="openFresh" href="#" target="_blank" rel="noreferrer">fresh 새 탭 열기</a>
-    </div>
+    <p class="desc">답변 내용은 참고용으로 제작되었으며 실제 사용 시 재 확인 검증 후 활용하시기 바랍니다.</p>
 
     <div class="grid">
       <section class="card">
@@ -207,7 +202,6 @@
       raw: document.getElementById('raw'),
       runBtn: document.getElementById('runBtn'),
       clearBtn: document.getElementById('clearBtn'),
-      openFresh: document.getElementById('openFresh'),
     };
     let selectedProduct = localStorage.getItem('manual-voc-fresh-selected-product') || '';
 
@@ -337,10 +331,6 @@
       el.raw.textContent = '아직 실행 전입니다.';
       renderProducts();
     });
-    el.openFresh.addEventListener('click', () => {
-      el.openFresh.href = `./manual-voc-fresh.html?ts=${Date.now()}`;
-    });
-
     renderProducts();
   </script>
 </body>

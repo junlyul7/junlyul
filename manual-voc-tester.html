@@ -277,6 +277,20 @@
       line-height: 1.6;
       font-weight: 700;
     }
+    .preview-box {
+      margin-top: 12px;
+      border: 3px dashed rgba(27, 27, 27, 0.35);
+      border-radius: 18px;
+      background: #fffaf0;
+      padding: 12px 14px;
+      line-height: 1.7;
+      font-size: 13px;
+      color: #2a261f;
+      font-weight: 700;
+    }
+    .preview-box strong {
+      font-weight: 900;
+    }
     .summary-card .card-body {
       display: grid;
       gap: 14px;
@@ -493,6 +507,13 @@
             <div class="hint">
               문의내용은 선택된 상품군과 함께 전송되어 라우터와 유사문 검색에 사용됩니다.
             </div>
+
+            <div class="preview-box" id="requestPreview">
+              <strong>전송 미리보기</strong><br>
+              상품군: -<br>
+              문의내용: -<br>
+              전송 문장: -
+            </div>
           </div>
         </article>
       </section>
@@ -606,6 +627,7 @@
     const manualValueEl = document.getElementById('manualValue');
     const systemValueEl = document.getElementById('systemValue');
     const rawJsonEl = document.getElementById('rawJson');
+    const requestPreviewEl = document.getElementById('requestPreview');
 
     let selectedProduct = localStorage.getItem(STORAGE_KEYS.selectedProduct) || '';
     let lastJson = '';
@@ -633,6 +655,7 @@
       productInput.value = selectedProduct;
       localStorage.setItem(STORAGE_KEYS.selectedProduct, selectedProduct);
       renderProducts();
+      renderPreview();
     }
 
     function renderProducts() {
@@ -663,6 +686,19 @@
       return [product, question].filter(Boolean).join(' ').trim();
     }
 
+    function renderPreview() {
+      const product = selectedProduct || productInput.value.trim() || '-';
+      const question = questionEl.value.trim() || '-';
+      const requestText = buildRequestText() || '-';
+
+      requestPreviewEl.innerHTML = `
+        <strong>전송 미리보기</strong><br>
+        상품군: ${escapeHtml(product)}<br>
+        문의내용: ${escapeHtml(question)}<br>
+        전송 문장: ${escapeHtml(requestText)}
+      `;
+    }
+
     function resetResult() {
       runStateEl.textContent = '대기 중';
       routerValueEl.textContent = '-';
@@ -673,11 +709,14 @@
       systemValueEl.textContent = '-';
       rawJsonEl.textContent = '아직 실행 전입니다.';
       lastJson = '';
+      renderPreview();
     }
 
     function renderResponse(data) {
       const row = data?.search?.matched_rows?.[0] || null;
-      const answer = data?.draft?.draft_answer || data?.router?.response || '표시할 답변이 없습니다.';
+      const routerReason = data?.router?.reason || '-';
+      const searchReason = data?.search?.reason || '-';
+      const answer = data?.draft?.draft_answer || data?.router?.response || `표시할 답변이 없습니다.\n\n라우터: ${routerReason}\n검색: ${searchReason}`;
       const manualText = row && /매뉴얼|manual/i.test(String(row.standard_answer || ''))
         ? [row.reference_doc_name, row.reference_file_path].filter(Boolean).join('\n')
         : '';
@@ -726,12 +765,22 @@
       resetResult();
     });
 
-    productSearch.addEventListener('input', renderProducts);
+    productSearch.addEventListener('input', () => {
+      renderProducts();
+      renderPreview();
+      const exact = PRODUCT_GROUPS.find((group) => normalizeText(group) === normalizeText(productSearch.value));
+      if (exact) {
+        selectedProduct = exact;
+        renderSelectedProduct();
+      }
+    });
     productInput.addEventListener('input', () => {
       selectedProduct = productInput.value.trim();
       localStorage.setItem(STORAGE_KEYS.selectedProduct, selectedProduct);
       renderProducts();
+      renderPreview();
     });
+    questionEl.addEventListener('input', renderPreview);
 
     async function runTest() {
       const apikey = apikeyInput.value.trim() || localStorage.getItem(STORAGE_KEYS.apikey) || '';
@@ -785,6 +834,7 @@
     productSearch.value = '';
     renderSelectedProduct();
     renderProducts();
+    renderPreview();
     resetResult();
   </script>
 </body>

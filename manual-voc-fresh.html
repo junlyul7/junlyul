@@ -67,28 +67,22 @@
       align-items: center;
       margin-top: 2px;
     }
-    .selection-line {
+    .selection-inline {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(31, 31, 31, 0.12);
+      margin-left: 4px;
     }
-    .selection-line .label {
+    .selection-inline .label {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 800;
       font-size: 14px;
     }
-    .selection-line .hint-inline {
-      color: #666;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+    .selection-inline .hint-inline { display: none; }
+    .secret-field { display: none; }
     button, a.button {
       appearance: none;
       border: 3px solid var(--line);
@@ -164,7 +158,7 @@
           <label for="endpoint">Endpoint URL</label>
           <input id="endpoint" value="https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow">
         </div>
-        <div class="field">
+        <div class="field secret-field">
           <label for="apikey">Supabase Key</label>
           <input id="apikey" type="password" placeholder="anon or publishable key">
         </div>
@@ -179,9 +173,8 @@
         <div class="actions">
           <button class="primary" id="runBtn" type="button">답변 생성</button>
           <button class="secondary" id="clearBtn" type="button">초기화</button>
-          <div class="selection-line" style="flex: 1 1 280px; margin-top: 0; padding-top: 0; border-top: 0;">
-            <div class="label">선택 상품(상품명)<span class="pill" id="selectedProduct">미선택</span></div>
-            <div class="hint-inline">상품을 선택하면 문의 내용과 함께 아래 결과에 반영됩니다.</div>
+          <div class="selection-inline" style="flex: 1 1 220px;">
+            <div class="label">선택 상품<span class="pill" id="selectedProduct">미선택</span></div>
           </div>
         </div>
         <div class="hint">상품을 선택한 뒤 질문을 넣으면 실제 전송 문장을 아래 결과에서 바로 확인할 수 있습니다.</div>
@@ -211,6 +204,7 @@
 
   <script>
     const ENDPOINT = 'https://peznvgzngvguvlgnetsp.functions.supabase.co/manual-voc-flow';
+    const DEFAULT_SUPABASE_KEY = 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu';
     const STORAGE_KEY = 'manual-voc-fresh-key';
     const PRODUCTS = [
       '실손보험', '건강보험', '암보험', '정기보험', '종신보험', '간편보험', '유병자보험',
@@ -338,7 +332,14 @@
       }
     }
 
-    el.apikey.value = localStorage.getItem(STORAGE_KEY) || '';
+    const savedKey = localStorage.getItem(STORAGE_KEY) || DEFAULT_SUPABASE_KEY;
+    if (savedKey && savedKey !== 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu') {
+      localStorage.setItem(STORAGE_KEY, savedKey);
+    }
+    el.apikey.value = savedKey === 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu' ? '' : savedKey;
+    if (savedKey && savedKey !== 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu') {
+      localStorage.setItem(STORAGE_KEY, savedKey);
+    }
     el.apikey.addEventListener('input', () => localStorage.setItem(STORAGE_KEY, el.apikey.value));
     el.productSearch.addEventListener('input', renderProducts);
     el.question.addEventListener('input', () => {
@@ -365,3 +366,5 @@
   </script>
 </body>
 </html>
+
+

@@ -285,7 +285,7 @@
     }
 
     async function run() {
-      const apikey = el.apikey.value.trim() || localStorage.getItem(STORAGE_KEY) || '';
+      const apikey = el.apikey.value.trim() || localStorage.getItem(STORAGE_KEY) || DEFAULT_SUPABASE_KEY || '';
       const text = buildText();
       const selected = getEffectiveProduct();
       el.selectedProduct.textContent = selected || '미선택';
@@ -333,11 +333,8 @@
     }
 
     const savedKey = localStorage.getItem(STORAGE_KEY) || DEFAULT_SUPABASE_KEY;
-    if (savedKey && savedKey !== 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu') {
-      localStorage.setItem(STORAGE_KEY, savedKey);
-    }
-    el.apikey.value = savedKey === 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu' ? '' : savedKey;
-    if (savedKey && savedKey !== 'sb_publishable_68PjdI3mlcSArCVCFMDsRg_qHGIWQIu') {
+    el.apikey.value = savedKey;
+    if (savedKey) {
       localStorage.setItem(STORAGE_KEY, savedKey);
     }
     el.apikey.addEventListener('input', () => localStorage.setItem(STORAGE_KEY, el.apikey.value));
